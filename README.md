@@ -7,23 +7,6 @@ Yugatn Box — проект универсальной игровой систе
 
 > **Честное ограничение:** ни одна универсальная архитектура не гарантирует запуск всех игр PlayStation, Xbox, Nintendo и ПК. Игры зависят от аппаратных особенностей, ОС, DRM, античита, сервисов, лицензий и разрешений правообладателей. Yugatn Box не будет заявлять о поддержке закрытого каталога без технической проверки и необходимых прав.
 
-## VR / AR / MR / XR
-
-Yugatn Box is being designed to support more than a TV or monitor. The architecture now considers compatible VR headsets, AR glasses and mixed-reality devices, alongside a smartphone companion.
-
-Planned modes:
-- **TV/Monitor:** standard console output and recovery screen.
-- **Virtual screen:** conventional PC games displayed on a large virtual screen in a compatible headset or AR glasses; this is not native VR.
-- **PC VR:** stereoscopic rendering, head tracking and supported tracked controllers through a compatible runtime.
-- **AR/MR:** spatial panels and optional vendor-supported features such as passthrough or hand tracking.
-- **Phone Companion:** setup, remote controls, status and supported streaming functions.
-
-XR compatibility is device-, OS-, driver-, runtime- and application-specific. HDMI or USB-C presence alone does not prove that a headset can be connected. No headset support is claimed until it has been tested.
-
-- [XR Support Strategy](docs/XR_SUPPORT.md)
-- [System Architecture](docs/ARCHITECTURE.md)
-- [Roadmap](docs/ROADMAP.md)
-
 ## Концепция
 
 - Подключение к телевизору или монитору через HDMI.
@@ -79,11 +62,23 @@ XR compatibility is device-, OS-, driver-, runtime- and application-specific. HD
 Сначала доказать работоспособность программного прототипа и измерить пользовательскую ценность. Затем выбирать оборудование. Не путать проектную гипотезу, успешно пройденный тест, официальную совместимость и лицензионное разрешение.
 
 
-## Smartphone as a motion controller
+## VR, AR, MR и XR
 
-A phone can be an optional companion gamepad, using calibrated tilt for racing steering and configurable pitch/roll for flight simulators. The touchscreen can provide throttle, brake, rudder, trim, recenter and other buttons. Physical controllers remain supported.
+Yugatn Box проектируется для работы с телевизором или монитором, совместимыми VR-гарнитурами и AR-очками. Поддержка зависит от конкретной модели, ОС, драйверов, runtime и приложения.
 
-- [Smartphone Motion Controller specification](docs/SMARTPHONE_MOTION_CONTROLLER.md)
-- [Motion Pad sensor/UI demo](prototype/motion-pad.html)
+- **TV/Monitor:** стандартный экран и режим восстановления.
+- **Virtual Screen:** обычная PC-игра на большом виртуальном экране; это не нативная VR-игра.
+- **PC VR:** стереоскопический рендеринг, отслеживание головы и поддерживаемые контроллеры.
+- **AR/MR:** пространственные панели и дополнительные функции, если они поддерживаются конкретным устройством.
+- [Стратегия VR/AR/MR/XR](docs/XR_SUPPORT.md)
 
-The demo reads device orientation locally when the browser permits it. It is not paired with the console and does not send game input. Real control requires authenticated local pairing, a console-side input backend, fail-safe neutralization, and measured latency.
+HDMI или USB-C сами по себе не гарантируют совместимость с гарнитурой. Ни одна модель не считается поддерживаемой до проведения тестов.
+
+## Смартфон как дополнительный геймпад
+
+Смартфон может работать как дополнительный контроллер. Наклон используется для руления в гонках или управления креном и тангажом в авиасимуляторах. Сенсорный экран может предоставлять газ, тормоз, ручной тормоз, руль направления, триммер и кнопку центрирования. Физический геймпад остаётся доступен.
+
+- [Спецификация управления движением смартфона](docs/SMARTPHONE_MOTION_CONTROLLER.md)
+- [Демонстрация Motion Pad](prototype/motion-pad.html)
+
+Демо читает ориентацию устройства локально, если браузер разрешает доступ к датчикам. Оно пока не соединяется с консолью и не отправляет игровые команды. Для реального управления нужны безопасное сопряжение, серверный обработчик ввода и аварийный возврат осей в нейтраль при потере соединения.
