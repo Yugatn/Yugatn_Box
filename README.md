@@ -118,3 +118,14 @@ Controller Lab использует браузерный Gamepad API, если �
 Начальный технический приоритет — библиотека и provider-интерфейсы, затем нативный PC-launcher и один проверенный legacy-runtime. Современные Xbox One/Series и PS4/PS5 рассматриваются через официальные приложения/Remote Play и нативные PC-версии, пока не доказан поддерживаемый локальный путь. Проект не распространяет коммерческие игры, firmware, ключи или proprietary SDK.
 
 - [Game Compatibility Hub — интерактивный макет](prototype/game-compatibility-hub.html)
+
+
+### Машинно-проверяемый каталог совместимости
+
+- [JSON Schema каталога игр](schemas/game-catalog.schema.json)
+- [Пример каталога](data/game-catalog.example.json) — демонстрационные записи имеют статус NOT_TESTED
+- [Валидатор на Node.js](scripts/validate-game-catalog.mjs)
+- [Тесты валидатора](tests/validate-game-catalog.test.mjs)
+- [Модель данных и критерии проверки](docs/COMPATIBILITY_DATA_MODEL.md)
+
+Проверка локально: `node scripts/validate-game-catalog.mjs` и `node --test tests/validate-game-catalog.test.mjs`. GitHub Actions запускает эти проверки при изменении каталога и валидатора. Это проверяет структуру данных, а не способность запускать игры.
