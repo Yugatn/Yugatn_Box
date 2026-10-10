@@ -245,3 +245,10 @@ Game Compatibility Hub — единая оболочка для разных с�
 Первый интеграционный путь — внешний runtime, установленный пользователем из проверенного источника, с явным путём к исполняемому файлу. Не включать copyrighted firmware, ключи, коммерческие образы игр или сторонние бинарники без разрешения. Не обходить DRM, учётные записи, античит или аутентификацию платформ. Для современных консолей сначала исследовать официальные Remote Play/streaming-приложения и native PC editions.
 
 Подробная спецификация и этапы: [GAME_COMPATIBILITY_HUB.md](GAME_COMPATIBILITY_HUB.md).
+
+
+## 21. Машинно-проверяемая модель каталога игр
+
+Контракт каталога находится в `schemas/game-catalog.schema.json`, пример — в `data/game-catalog.example.json`. `scripts/validate-game-catalog.mjs` проверяет базовые инварианты без внешних npm-зависимостей; тесты — в `tests/validate-game-catalog.test.mjs`; CI — `.github/workflows/catalog-validation.yml`. Неизвестный статус остаётся NOT_TESTED. Валидность JSON и прохождение тестов не означают, что игра запускается. Перед production статус PLAYABLE должен требовать воспроизводимый отчёт о runtime, ОС, аппаратной конфигурации и игровом процессе.
+
+Подробности: [COMPATIBILITY_DATA_MODEL.md](COMPATIBILITY_DATA_MODEL.md).
