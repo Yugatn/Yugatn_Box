@@ -1,151 +1,124 @@
-# Smartphone Motion Controller
+# Смартфон как контроллер движения
 
-**Status:** planned subsystem and browser proof-of-concept. No end-to-end console pairing or game-input backend is implemented yet.
+**Статус:** спецификация и браузерный демонстрационный прототип. Сопряжение с консолью и настоящий игровой backend пока не реализованы.
 
-## 1. Product concept
+## 1. Назначение
 
-A smartphone can act as an optional second gamepad for Yugatn Box. It complements, rather than replaces, a physical controller. Its motion sensors can provide steering or pitch/roll input for racing games and flight simulators; its touchscreen can provide buttons, throttle, trim, menus and a fallback directional pad.
+Смартфон может выступать дополнительным геймпадом Yugatn Box, не заменяя физический контроллер.
 
-Use cases:
-- **Racing:** tilt left/right to steer; touch controls for throttle, brake, handbrake and gear shift.
-- **Flight simulator:** tilt/roll and pitch controls, with configurable axis mapping; touch controls for throttle, rudder, trim, brakes and view recenter.
-- **General companion:** keyboard, touchpad, media controls, chat/second-screen UI and optional player-two input.
-- **Accessibility / casual play:** customizable sensitivity and remapping, while preserving physical-controller support.
+- **Гонки:** наклон влево/вправо управляет рулём; сенсорные кнопки отвечают за газ, тормоз, ручной тормоз и переключение передач.
+- **Авиасимуляторы:** настраиваемые тангаж и крен; сенсорные кнопки для газа, руля направления, триммера, тормоза и центрирования.
+- **Дополнительные функции:** клавиатура, тачпад, меню, медиауправление и, в дальнейшем, второй игрок.
+- **Настраиваемость:** чувствительность, мёртвая зона, инверсия и переназначение осей.
 
-This is an optional input mode. Motion control must never activate unexpectedly or take over a connected physical controller without user consent.
+Управление движением не должно включаться автоматически или перехватывать управление у физического геймпада без согласия игрока.
 
-## 2. Sensors and interpretation
+## 2. Датчики
 
-Prefer fused device orientation for steering, rather than mapping raw acceleration directly:
-- Device orientation can expose beta (front/back tilt) and gamma (left/right tilt), depending on browser/OS and sensor permission.
-- Linear acceleration and acceleration including gravity have different meanings; raw accelerometer readings are noisy and include gravity unless the platform supplies gravity-compensated values.
-- Flight simulation may need gyroscope/orientation data for smooth pitch and roll, not just linear acceleration.
-- Sensor availability, axis conventions, permission prompts and sampling rates vary by device and OS.
+Для руления лучше использовать ориентацию устройства, часто рассчитанную браузером из совмещённых показаний датчиков, а не напрямую переводить сырое ускорение в управление.
 
-The implementation must check capability at runtime and never assume a sensor is available. If orientation events are unavailable or denied, show a clear explanation and provide touch controls / manual input.
+- beta обычно описывает наклон вперёд/назад, gamma — влево/вправо, но доступность и ориентация осей зависят от устройства и ОС.
+- Ускорение с гравитацией и линейное ускорение — разные величины; сырые значения могут быть шумными.
+- Для авиасимулятора плавный крен/тангаж может требовать данных гироскопа или объединённой ориентации.
+- Датчик может быть недоступен или запрещён браузером. В этом случае интерфейс должен объяснить причину и сохранить сенсорное управление.
 
-## 3. Calibration and control mapping
+## 3. Калибровка и профили
 
-Each player/session should be able to:
-- calibrate the current phone pose as neutral;
-- recenter at any time;
-- adjust sensitivity and dead zone;
-- set minimum/maximum tilt angle;
-- invert individual axes;
-- swap axes for portrait/landscape or a preferred grip;
-- select control profile: racing, flight, custom;
-- pause motion input instantly;
-- use a visible neutral indicator and sensor-health state.
+Пользователь должен иметь возможность:
+- откалибровать текущее положение телефона как нейтраль;
+- вручную центрировать управление;
+- настроить чувствительность и мёртвую зону;
+- задать угол наклона для полного диапазона;
+- инвертировать каждую ось;
+- выбрать профиль «Гонки», «Полёт» или «Пользовательский»;
+- немедленно поставить управление на паузу;
+- видеть состояние датчика и нейтральную позицию.
 
-A mapping function converts orientation delta from the calibrated neutral pose into a normalized axis in [-1, 1]. Apply dead-zone handling and smoothing with bounded response. Avoid auto-calibration while the user is actively steering, since that can silently shift the neutral point.
+Ориентация относительно калибровки преобразуется в нормализованную ось от -1 до +1. Применяются ограничение диапазона, мёртвая зона и контролируемая фильтрация. Нельзя незаметно менять нейтраль во время активного управления.
 
-Conceptual pipeline: sensor event → capability/permission check → neutral calibration → filtering/dead zone → profile mapping → authenticated session transport → virtual gamepad axes/buttons. This is a design outline, not an implemented production pipeline.
+## 4. Протокол ввода
 
-## 4. Input protocol
+Нормализованное состояние виртуального геймпада может включать:
+- оси: руль, тангаж, крен, руль направления и при необходимости камера;
+- кнопки: газ, тормоз, ускорение, ручной тормоз, передачи, центрирование и пауза;
+- метаданные: версия протокола, номер последовательности, идентификатор профиля и монотонная временная метка, если доступна.
 
-Represent phone input as a virtual gamepad state:
-- axes: steering, pitch, roll, rudder and optional camera;
-- buttons: throttle, brake, boost, handbrake, gear shift, recenter, pause;
-- metadata: session sequence number, monotonic timestamp where available, profile ID and protocol version.
+Консоль отклоняет неаутентифицированные, устаревшие, некорректные и выходящие за пределы значения. При отключении, скрытии вкладки, блокировке телефона, потере разрешения или истечении тайм-аута оси сбрасываются в нейтраль, все кнопки освобождаются. Иначе игра может продолжить получать полный газ или поворот после потери телефона.
 
-Keep payloads small and bounded. The console must reject stale, malformed, out-of-range and unauthenticated messages. Use a sequence number to detect reordering and dropped updates. On disconnect, focus loss, backgrounding, permission loss or stale input timeout, return axes to neutral and release all buttons. Never leave a game stuck at full steering/throttle after the phone disappears.
+Предпочтительнее передавать нормализованные команды, а не историю сырых показаний датчиков. Когда управление выключено или игра на паузе, поток команд не должен продолжаться без необходимости.
 
-Do not transmit sensor streams continuously when the game is paused or motion control is disabled. Prefer sending normalized controls rather than raw sensor history.
+## 5. Сопряжение и сеть
 
-## 5. Connection and pairing
+1. Консоль показывает одноразовый код или QR.
+2. Телефон сканирует код; пользователь подтверждает сопряжение на консоли.
+3. Создаётся аутентифицированная сессия в доверенной локальной сети.
+4. Пользователь выбирает профиль и явно включает управление движением.
+5. Индикатор соединения и большая кнопка «Пауза / Отключить» остаются доступными.
+6. Сессию можно отозвать в настройках консоли.
 
-MVP plan:
-1. Console displays a one-time pairing code or QR code.
-2. Phone scans/enters the code; user confirms pairing on the console.
-3. Pairing establishes an authenticated session on the trusted local network.
-4. The user selects a game/control profile and presses **Enable motion controls**.
-5. A visible connection indicator and **Pause / Disconnect** control remain available.
-6. The user can revoke the phone from console settings.
+Не создавать открытый endpoint управления без аутентификации. Не публиковать удалённое управление в интернете по умолчанию. Для простого прототипа можно исследовать локальный WebSocket с аутентифицированным сопряжением; WebRTC DataChannel — альтернативный вариант. Решение принимается после измерения задержки и оценки безопасности. Доступ к датчикам в браузере обычно требует защищённого контекста HTTPS и явного действия пользователя.
 
-Do not expose an unauthenticated input endpoint. Do not expose remote control to the public internet by default. A local WebSocket with authenticated pairing can be a simple first prototype; WebRTC data channels may be evaluated for later peer-to-peer transport. Transport selection requires latency, security and network testing. Browser sensor APIs normally require a secure context and, on some platforms, a user-triggered permission request.
+## 6. Приватность и надёжность
 
-## 6. Safety, privacy and reliability
+- Запрашивать разрешение на датчики только после нажатия пользователем.
+- Объяснять, какие данные используются и что передаётся.
+- Обрабатывать ориентацию на телефоне; сырые показания по умолчанию не сохранять и не загружать.
+- Сбрасывать ввод в нейтраль при отключении, скрытии страницы, потере фокуса или устаревших данных.
+- Сохранять заметную кнопку паузы и индикатор подключения.
+- Тестировать смену портретной/альбомной ориентации, блокировку экрана и прерывания ОС.
+- При недоступности датчиков сохранять сенсорные кнопки.
+- Не выдавать локальный браузерный макет за подключённый геймпад.
 
-- Ask for motion permission only after an explicit user action.
-- Explain which sensor is used and what data is transmitted.
-- Process motion locally on the phone; do not store or upload raw sensor history by default.
-- Provide a large pause/disconnect control and visible connection state.
-- Neutralize all axes on disconnect, tab hidden, phone locked or stale input.
-- Avoid unbounded smoothing that adds perceptible lag.
-- Keep steering response stable across sampling rates and phone models.
-- Use a clear calibration gesture and prevent accidental recentering.
-- Test portrait/landscape changes and OS interruptions.
-- Include optional sensitivity, dead zone and axis inversion to reduce discomfort.
-- Never represent a browser mockup as a connected gamepad or a measured latency result.
+## 7. Измерения задержки
 
-## 7. Latency and performance targets
+Измерять этапы отдельно: датчик → состояние управления на телефоне → сеть → обработка консолью → реакция игры, если её можно инструментировать. Фиксировать медиану и 95-й перцентиль задержки, джиттер, потери пакетов, время восстановления и реакцию на перегруженный Wi-Fi. Не указывать конкретную задержку до реальных измерений.
 
-Set acceptance criteria after measurement on selected devices. Measure end-to-end:
-- sensor event to phone control state;
-- network transport;
-- console input processing;
-- game-visible response where instrumentation is available.
+## 8. Тестовая матрица
 
-Record median and 95th-percentile latency, jitter, packet loss, reconnect time, stale-input recovery and behavior under congested Wi-Fi. Do not claim a specific millisecond latency until measured. Prefer a stable wired Ethernet console and 5/6 GHz local Wi-Fi for initial tests where available; actual results depend on the access point, phone, interference and network topology.
+Минимум один современный iPhone/Safari и один Android/Chrome:
+- разрешение на датчики предоставлено и отклонено;
+- датчик отсутствует или недоступен;
+- портретная и альбомная ориентация;
+- медленный и быстрый наклон;
+- калибровка и центрирование;
+- сворачивание страницы, блокировка телефона, потеря сети и отключение;
+- повторные, задержанные, некорректные и выходящие за диапазон пакеты;
+- тайм-аут и сброс осей в нейтраль;
+- длительный тест дрейфа, нагрева и расхода батареи.
 
-## 8. Test plan
+В отчёте фиксировать модель телефона, ОС/браузер, тип соединения, версию кода, измерения и известные проблемы.
 
-Minimum device matrix:
-- at least one recent iPhone/Safari and one Android/Chrome device;
-- sensor permission granted and denied;
-- sensor missing/unavailable;
-- portrait/landscape rotation;
-- slow and fast tilting;
-- calibration and recenter under load;
-- app/tab backgrounded, screen locked, network lost and phone disconnected;
-- malformed, repeated, delayed and out-of-range packets at the console boundary;
-- stale-input timeout and neutral release;
-- long-duration test for drift, thermal behavior and battery impact.
+## 9. Этапы разработки
 
-Record phone model, OS/browser, connection type, sampling behavior, test version, measured latency distribution and known issues.
+- **MC-0 — Демонстрация датчиков:** мобильная страница с разрешением, осями, калибровкой, чувствительностью, мёртвой зоной и сенсорным запасным управлением.
+- **MC-1 — Сопряжение:** одноразовый код, подтверждение на консоли, аутентификация и отзыв сессии.
+- **MC-2 — Виртуальный геймпад:** протокол осей/кнопок и тестовый стенд.
+- **MC-3 — Гонки:** наклонное руление, газ/тормоз, аварийная нейтрализация и тест в выбранной PC-игре.
+- **MC-4 — Полёт:** тангаж/крен, руль направления, газ, триммер и центрирование.
+- **MC-5 — Надёжность:** тесты повторного соединения, безопасности, некорректных сообщений и совместимости устройств.
 
-## 9. Phased implementation
+## 10. Критерии готовности
 
-### MC-0 — UX and sensor demo
-Build a mobile web page that requests permission after a tap, shows live orientation axes, supports calibration/recenter, sensitivity and dead zone, and has touch fallback. No console control claim.
+Функция может считаться проверенной, только если:
+- сопряжение подтверждается пользователем и может быть отозвано;
+- датчики не активируются без явного действия;
+- калибровка и центрирование воспроизводимы;
+- чувствительность, мёртвая зона и инверсия работают последовательно;
+- отключение/потеря свежих данных сбрасывает ввод в нейтраль за измеренное время;
+- оси и кнопки проверены в тестовом стенде и реальной поддерживаемой игре;
+- медианная и 95-процентильная задержка измерены в описанных условиях;
+- сырые данные движения по умолчанию не сохраняются и не загружаются;
+- отказ в разрешении не блокирует сенсорные кнопки;
+- отчёт содержит модель телефона, ОС, браузер, версию консоли и игру.
 
-### MC-1 — Local pairing
-Implement a console pairing endpoint, one-time pairing code, explicit confirmation, session revocation and authenticated input channel.
+## Открытые решения
 
-### MC-2 — Virtual gamepad
-Map normalized controls to a documented virtual gamepad interface and add a test harness before connecting real games.
+1. Какие версии iOS и Android поддерживать первыми?
+2. Должен ли телефон эмулировать стандартный геймпад, предоставлять SDK или оба варианта?
+3. Какая гоночная игра и какой авиасимулятор станут первыми сквозными тестами?
+4. Нужен ли режим второго игрока в MVP или сначала только управление наклоном?
+5. Какие пороги задержки и восстановления приемлемы после измерений?
 
-### MC-3 — Racing profile
-Implement tilt steering, throttle/brake touch buttons, neutral failsafe and per-device calibration. Test in selected supported PC games.
+## Вывод
 
-### MC-4 — Flight profile
-Add pitch/roll/rudder/throttle mapping, axis inversion, trim and recenter. Test with simulator-specific input bindings.
-
-### MC-5 — Production hardening
-Add reconnect handling, telemetry minimization, security review, automated malformed/stale packet tests, and per-device compatibility results.
-
-## 10. Acceptance criteria
-
-A feature may be marked **verified** only when:
-- pairing requires user confirmation and can be revoked;
-- motion input cannot start without explicit enablement;
-- neutral calibration and manual recenter work repeatably;
-- sensitivity/dead-zone/inversion are applied consistently;
-- loss of connection, focus or fresh input neutralizes controls within a defined tested timeout;
-- axes/buttons are mapped and tested in a real supported game or test harness;
-- median and p95 latency are measured under documented conditions;
-- no raw motion data is stored or uploaded by default;
-- sensor-denied and unsupported devices retain usable touch controls;
-- results identify exact phone, OS, browser, console build and game/input backend.
-
-## Open decisions
-
-1. Which phone OS versions must be supported first?
-2. Should the phone emulate a standard gamepad, expose a companion SDK, or both?
-3. Which racing game and flight simulator form the first end-to-end test?
-4. Is phone-as-player-two input in the MVP, or is motion control the priority?
-5. What measured latency and reconnect thresholds are acceptable?
-
-## Conclusion
-
-Treat the phone as an optional motion-capable controller. For racing, calibrated tilt steering is a natural first use case. For flight simulators, configurable pitch/roll and touch-based throttle/rudder provide a stronger control surface. The essential engineering requirements are explicit permission, calibration, axis mapping, secure pairing, measured latency and a fail-safe neutral state on any interruption.
+Смартфон стоит проектировать как необязательный контроллер с датчиками движения. Первый сценарий — калиброванное руление наклоном в гонках; следующий — настраиваемые тангаж/крен и сенсорные газ, руль направления и триммер для авиасимуляторов. Ключевые условия — явное разрешение, калибровка, безопасное сопряжение, измеренная задержка и нейтральный ввод при любом обрыве.
