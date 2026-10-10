@@ -116,3 +116,5 @@ Controller Lab использует браузерный Gamepad API, если �
 - [Универсальная поддержка контроллеров](docs/UNIVERSAL_CONTROLLER_SUPPORT.md)
 
 Начальный технический приоритет — библиотека и provider-интерфейсы, затем нативный PC-launcher и один проверенный legacy-runtime. Современные Xbox One/Series и PS4/PS5 рассматриваются через официальные приложения/Remote Play и нативные PC-версии, пока не доказан поддерживаемый локальный путь. Проект не распространяет коммерческие игры, firmware, ключи или proprietary SDK.
+
+- [Game Compatibility Hub — интерактивный макет](prototype/game-compatibility-hub.html)
