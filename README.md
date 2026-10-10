@@ -75,3 +75,9 @@ Yugatn Box — проект универсальной игровой систе
 - [Compatibility Index specification](docs/COMPATIBILITY_INDEX.md)
 
 Все десять записей каталога — примеры списка желаемых игр со статусом **Not tested**. Они не являются результатами тестирования или заявлением о совместимости.
+
+## Validation and next gate
+
+The current branch adds Ajv-based JSON Schema validation for the catalog, game entries and report files, plus negative checks for a false `Verified` claim, duplicate game IDs and a malformed report. CI still validates data and artifact presence only; it does not run the UI or test a physical controller.
+
+Browser Gamepad API navigation is implemented in the prototype for D-pad/analog navigation, accept/back and shoulder-button tab switching. Physical controller behavior remains **NOT TESTED**. See [Reference Profile Decision](docs/REFERENCE_PROFILE.md): hardware and Linux image remain `NOT_SELECTED`, with a seven-day decision window ending 2026-10-17.
