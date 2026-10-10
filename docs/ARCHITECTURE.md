@@ -154,3 +154,13 @@ MVP-функции:
 8. Набор обязательных тестовых игр.
 
 Эти решения должны приниматься после прототипирования и измерений, а не на основе маркетинговых обещаний.
+
+## MVP boundary: evidence before compatibility claims
+
+The first implementation is a static controller-first UI concept and a machine-readable compatibility catalog. It is not yet a game launcher, OS image, store integration, streaming client or mobile companion.
+
+The compatibility record and test report are separate artifacts. Wishlist entries must remain `Not tested` until a repeatable test run exists. A schema-valid record is not proof that a game runs. `Native`, `Verified` or `Playable` requires a dated report and a declared reference profile.
+
+Local execution, compatibility layers, emulation, official remote play, cloud streaming and external capture are distinct routes. Never silently replace a failed local launch with a streaming route. The user must see prerequisites and consent to accounts/network/data transfer.
+
+The MVP and its differentiation are defined in [MVP_SCOPE.md](MVP_SCOPE.md); the public data contract is in [COMPATIBILITY_INDEX.md](COMPATIBILITY_INDEX.md).
