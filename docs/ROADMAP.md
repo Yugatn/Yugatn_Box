@@ -122,3 +122,13 @@ BOM, assembly, packaging, logistics, warranty reserve, returns, licences, suppor
 ## Project governance
 
 Each major feature needs a user problem, hypothesis, alternatives, acceptance criteria, tests, limitations, risks and status. Hypotheses are not proven until measured. If demand, compatibility or cost assumptions fail, revise the plan before custom hardware investment.
+
+
+## Stage 2A — Smartphone Motion Controller
+- Build the mobile sensor UI demo with permission prompt, calibration, recenter, sensitivity, dead zone, axis inversion and touch fallback.
+- Implement authenticated local pairing with console confirmation and revocation.
+- Add a virtual-gamepad protocol with versioning, sequence numbers, bounds checks and stale-input neutralization.
+- Validate a racing tilt-steering profile first; then add flight pitch/roll, throttle, rudder and trim.
+- Test at least one iPhone/Safari and one Android/Chrome device; record median and p95 end-to-end latency, jitter, packet loss and reconnect behavior.
+
+**Exit criteria:** actual console-side game input is demonstrated in a test harness and one supported game; loss of phone/network/focus neutralizes controls within a measured timeout; permission denial retains touch fallback; pairing is revocable; no raw sensor data is uploaded by default. The static motion demo alone does not satisfy this stage.
