@@ -7,6 +7,23 @@ Yugatn Box — проект универсальной игровой систе
 
 > **Честное ограничение:** ни одна универсальная архитектура не гарантирует запуск всех игр PlayStation, Xbox, Nintendo и ПК. Игры зависят от аппаратных особенностей, ОС, DRM, античита, сервисов, лицензий и разрешений правообладателей. Yugatn Box не будет заявлять о поддержке закрытого каталога без технической проверки и необходимых прав.
 
+## VR / AR / MR / XR
+
+Yugatn Box is being designed to support more than a TV or monitor. The architecture now considers compatible VR headsets, AR glasses and mixed-reality devices, alongside a smartphone companion.
+
+Planned modes:
+- **TV/Monitor:** standard console output and recovery screen.
+- **Virtual screen:** conventional PC games displayed on a large virtual screen in a compatible headset or AR glasses; this is not native VR.
+- **PC VR:** stereoscopic rendering, head tracking and supported tracked controllers through a compatible runtime.
+- **AR/MR:** spatial panels and optional vendor-supported features such as passthrough or hand tracking.
+- **Phone Companion:** setup, remote controls, status and supported streaming functions.
+
+XR compatibility is device-, OS-, driver-, runtime- and application-specific. HDMI or USB-C presence alone does not prove that a headset can be connected. No headset support is claimed until it has been tested.
+
+- [XR Support Strategy](docs/XR_SUPPORT.md)
+- [System Architecture](docs/ARCHITECTURE.md)
+- [Roadmap](docs/ROADMAP.md)
+
 ## Концепция
 
 - Подключение к телевизору или монитору через HDMI.
