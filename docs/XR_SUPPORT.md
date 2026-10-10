@@ -1,153 +1,93 @@
-# XR: Virtual Reality and Additional Reality Support
+# Поддержка VR, AR, MR и XR
 
-**Status:** proposed product architecture and roadmap. This document does not claim that XR hardware has been tested or that any headset is already supported.
+**Статус:** проектная архитектура и план испытаний. Реальная поддержка конкретных гарнитур пока не подтверждена.
 
-## 1. Product goal
+## 1. Цель
 
-Yugatn Box should be designed as a living-room game system that can connect to:
-- a TV or monitor over HDMI;
-- a compatible VR headset for immersive stereoscopic experiences;
-- AR/MR/XR glasses or headsets for spatial overlays, virtual screens, and mixed-reality experiences;
-- a smartphone used as companion controller, setup device, or supported streaming endpoint.
+Yugatn Box должна подключаться к телевизору/монитору, совместимым VR-гарнитурам, AR-очкам и устройствам смешанной реальности. Смартфон может быть пультом, дополнительным геймпадом или вспомогательным экраном.
 
-“VR”, “AR”, “MR” and “XR” describe different usage modes, not a single interchangeable hardware interface. Compatibility must be assessed per headset, OS, runtime, connection method, application and feature.
+VR, AR, MR и XR — разные режимы использования, а не взаимозаменяемые типы разъёма. Совместимость определяется конкретной моделью, ОС, драйвером, runtime, способом соединения и приложением.
 
-## 2. XR modes
+## 2. Режимы
 
-### Mode A — TV / Monitor
-Standard 2D console mode. The TV/monitor remains the default output and recovery screen.
+- **TV/Monitor:** стандартный 2D-вывод, настройки и восстановление.
+- **Virtual Screen:** обычная PC-игра на виртуальном большом экране. Это не нативная VR-совместимость.
+- **PC VR:** стереоскопический рендеринг, отслеживание головы и поддерживаемые контроллеры.
+- **AR/MR:** пространственные панели и, если устройство поддерживает, passthrough, картирование пространства и трекинг рук.
+- **Smartphone Companion:** настройка, пульт, сенсорное управление и поддерживаемые сценарии потоковой передачи.
 
-### Mode B — PC VR
-The headset renders a stereoscopic scene with head tracking and supported controllers. The host GPU renders two views at a high and stable frame rate. The runtime and game must support the chosen headset and operating system.
+## 3. Требования к оборудованию
 
-### Mode C — Virtual screen
-A headset or AR glasses display a large virtual 2D screen for ordinary supported PC games. This is not the same as native VR: the game may still render as a conventional flat image.
+- Выбирать GPU по измерениям на конкретной гарнитуре и приложении; для XR важна стабильность времени кадра при длительной нагрузке.
+- Проверять фактическую видеолинию устройства: DisplayPort, USB-C с DisplayPort Alt Mode, фирменный адаптер или поддерживаемую беспроводную передачу.
+- USB-C не гарантирует видеорежим, USB4 или Thunderbolt.
+- Проверять питание и пропускную способность USB для гарнитуры и аксессуаров трекинга.
+- Проверять требования к базовым станциям/датчикам, звуку, микрофону и контроллерам.
+- Тестировать нагрев, шум и питание при длительной XR-нагрузке.
+- Сохранять TV/monitor как путь настройки и восстановления.
 
-### Mode D — AR / MR companion
-Where hardware and its SDK support it, the device can display virtual screens, companion controls, dashboards or spatial overlays. Real-world passthrough, environment mapping and occlusion are headset-specific capabilities and must not be assumed from a USB-C port alone.
+Не задавать универсальные значения разрешения, частоты обновления, задержки или класса GPU до выбора целевых устройств и испытаний.
 
-### Mode E — Smartphone-assisted XR
-The phone can help with setup, pairing, input, notifications or supported casting. A phone is not assumed to provide headset-grade tracking or low-latency XR rendering.
+## 4. Архитектурные модули
 
-## 3. Hardware requirements
+1. **Device Discovery:** обнаружение возможностей, реально доступных ОС/runtime.
+2. **XR Compatibility Registry:** модель, прошивка, соединение, версии ОС/драйвера/runtime, приложение, режим и результаты.
+3. **Runtime Adapter:** подключение поддерживаемого runtime; OpenXR исследуется там, где поддерживается всем выбранным стеком.
+4. **XR Session Manager:** запуск/остановка, потеря фокуса, сон/пробуждение, отключение и сбои.
+5. **Display Router:** переключение TV/monitor, виртуального экрана и XR только при наличии подтверждённой поддержки.
+6. **Performance Monitor:** время кадра, пропуски, reprojection при наличии метрик, температура, питание и стабильность.
+7. **Input Mapper:** физический геймпад и поддерживаемые трекеры без предположения, что любая игра принимает любой тип ввода.
+8. **AR/MR Adapter:** специфичные для устройства passthrough, пространственные якоря, трекинг рук и взгляда.
+9. **Recovery Path:** доступный выход из XR и возврат на обычный экран.
+10. **Smartphone Companion:** сопряжение, управление, статус и сенсорные профили.
 
-The initial prototype should use off-the-shelf PC hardware and test headsets before any custom enclosure or board is designed.
+## 5. Смартфон в XR-сценарии
 
-- **GPU:** choose from measured headset-specific requirements. VR needs sustained frame pacing and adequate GPU headroom, not merely a high average FPS in a flat-screen game.
-- **Display link:** support the headset's actual connection requirements. Depending on the model, this may be DisplayPort, USB-C with DisplayPort Alt Mode, a vendor-specific link, or wireless streaming. HDMI on the console does not automatically carry video to every headset.
-- **USB:** provide sufficient bandwidth and power for headset, tracking and accessories. Validate ports and controllers against each vendor's requirements.
-- **Network:** wired Ethernet is preferred for wireless PC VR streaming tests; Wi-Fi capability alone does not guarantee a suitable experience.
-- **CPU/GPU thermal design:** test sustained XR workloads, not just short benchmark bursts.
-- **Memory and storage:** size against the selected OS, runtime and target games; do not lock the final BOM before headset and game testing.
-- **Audio and input:** validate headset audio, microphone, hand controllers, tracking stations/sensors where required, and standard gamepads.
-- **Fallback:** keep TV/monitor mode usable for setup, diagnostics and recovery even if a headset is disconnected or fails.
+Телефон может выступать дополнительным контроллером, даже когда изображение выводится в гарнитуру. Не требовать от игрока смотреть на телефон во время динамичной игры; ключевые действия должны быть доступны на ощупь. Сохранять совместимость с физическими контроллерами.
 
-No universal resolution, refresh rate, latency, field of view or GPU target is specified until a target headset set is selected.
+Для гоночных игр телефон использует откалиброванный наклон для руления. Для авиасимуляторов можно сопоставить наклон тангажу и крену, а сенсорные кнопки — газу, тормозу, рулю направления, триммеру и центрированию. Подробности — в [спецификации контроллера движения](SMARTPHONE_MOTION_CONTROLLER.md).
 
-## 4. Software architecture
+## 6. Статусы совместимости
 
-Separate XR integration from the core console shell:
+- **XR-NATIVE:** у приложения есть поддерживаемый нативный XR-режим в протестированной конфигурации.
+- **XR-VERIFIED:** полная тестовая матрица пройдена для точных версий гарнитуры, runtime, ОС, драйвера и приложения.
+- **VIRTUAL-SCREEN:** игра работает как плоское изображение на виртуальном экране.
+- **STREAMING:** изображение передаётся с поддерживаемого хоста/сервиса; локальный XR-рендеринг не подразумевается.
+- **LIMITED:** запуск возможен, но важные функции или требования производительности не соблюдены.
+- **UNSUPPORTED:** известная несовместимость.
+- **NOT-TESTED:** данных недостаточно.
 
-1. **Device Discovery** — detects attached display/headset and reports only capabilities actually exposed by the OS/runtime.
-2. **XR Compatibility Registry** — records headset model, connection, OS, driver, runtime version, supported modes and test results.
-3. **Runtime Adapter** — integrates with the chosen supported XR runtime, for example OpenXR where supported by the headset, OS, driver and application.
-4. **XR Session Manager** — starts, monitors and cleanly stops sessions; handles headset removal, runtime crashes, sleep/wake and focus changes.
-5. **Performance Monitor** — records frame time, missed frames, reprojection/spacewarp status where available, dropped frames, temperature and connection stability.
-6. **Input Mapper** — maps standard gamepad, tracked controllers and supported hand input without assuming every game accepts every input type.
-7. **Display Router** — selects TV/monitor, headset VR, or virtual-screen mode, subject to actual runtime capabilities.
-8. **Phone Companion** — pairs securely for setup, controls, status and supported auxiliary features.
-9. **Recovery path** — provides an accessible way to end the XR session and return to the regular display.
+Обнаружение гарнитуры не доказывает запуск игр. Работа игры на виртуальном экране не доказывает поддержку VR.
 
-Keep vendor-specific features behind adapters. Avoid hard-coding the entire product around one headset manufacturer.
+## 7. Безопасность и приватность
 
-## 5. Standards and integration strategy
+- Не запускать иммерсивный контент автоматически при подключении.
+- Предоставлять немедленный выход, понятную диагностику и возврат к TV/monitor.
+- Учитывать сидячий/стоячий режим и предупреждения о зоне движения, если runtime их поддерживает.
+- Не заявлять медицинские или доступностные преимущества без доказательств.
+- Считать взгляд, карту помещения, камеру и микрофон чувствительными данными. Не загружать их без явного согласия и конкретной цели.
+- Смартфон должен запрашивать доступ к датчикам только после явного действия пользователя.
 
-- **OpenXR:** preferred investigation path for cross-vendor XR application/runtime interoperability when the selected OS, runtime and device support it. OpenXR is not a guarantee that every headset, store, game or vendor feature works.
-- **SteamVR and other vendor runtimes:** investigate as optional integrations subject to platform support, licensing and compatibility tests.
-- **AR/MR SDKs:** treat each vendor's spatial mapping, passthrough, hand tracking, eye tracking and anchoring as optional capabilities.
-- **Wireless PC VR:** treat as a separate transport mode with its own bandwidth, latency, codec and stability acceptance criteria.
-- **Virtual monitor mode:** investigate compatible headset software that exposes a virtual display or desktop. Do not claim a universal driverless mode without testing.
+## 8. Тестовая матрица
 
-Do not bypass DRM, vendor authentication, platform security or licensing restrictions to make a headset or game work.
+Для каждой гарнитуры фиксировать модель/прошивку, соединение, ОС, GPU/драйвер, runtime, приложение, режим, частоту/стабильность кадров, трекинг, контроллеры, звук, сон/пробуждение, нагрев, питание, отключение и восстановление. Нужны короткая и длительная сессии, повторяемые результаты и список известных проблем.
 
-## 6. XR compatibility statuses
+## 9. План внедрения
 
-Use the same honest status model as the game catalogue, extended with XR details:
+- **XR-0:** выбор 2–3 целевых устройств и анализ требований.
+- **XR-1:** виртуальный экран как первый практический сценарий.
+- **XR-2:** proof of concept PC VR на готовом оборудовании.
+- **XR-3:** функции AR/MR только при поддержке выбранного устройства.
+- **XR-4:** выбор конечных GPU, портов, охлаждения и корпуса после измерений.
 
-- **XR-NATIVE:** the application has a supported native XR mode on the tested configuration.
-- **XR-VERIFIED:** full test matrix passed on the exact headset, runtime, OS, driver and application version.
-- **VIRTUAL-SCREEN:** a flat-screen game works on a virtual display; not native VR.
-- **STREAMING:** image is streamed from a supported host/service; local XR rendering is not implied.
-- **LIMITED:** basic operation works but important features or performance targets are unmet.
-- **UNSUPPORTED:** known blocking incompatibility.
-- **NOT-TESTED:** no evidence sufficient to make a compatibility claim.
+## Открытые решения
 
-A headset being detected is not proof that games work. A game opening in a virtual screen is not proof of VR support.
+1. Какие модели VR-гарнитур и AR-очков являются первыми целями?
+2. Важнее нативный PC VR или виртуальный экран в первой версии?
+3. Допускается ли проводное подключение на этапе прототипа?
+4. Какой бюджет, уровень шума и энергопотребления приемлемы?
+5. Какие XR-функции обязательны, а какие остаются опциональными?
 
-## 7. XR safety and comfort
+## Вывод
 
-- Provide clear session-start and session-end controls.
-- Show play-area/setup warnings where the runtime supports them.
-- Do not launch immersive content automatically on device connection.
-- Support immediate exit to a stable display and clear error messages.
-- Make seated and standing modes explicit where relevant.
-- Warn about motion discomfort and provide user-adjustable comfort settings when the game/runtime supports them.
-- Respect eye-tracking, room-mapping, camera and microphone permissions; disable optional collection by default.
-- Do not upload room scans, gaze data, voice or spatial maps without explicit consent and a clear purpose.
-- Avoid claiming medical or accessibility benefits without evidence.
-
-## 8. Validation matrix
-
-For every candidate headset, record:
-- exact model and firmware;
-- cable/adapter/wireless connection;
-- OS build, GPU, driver and XR runtime versions;
-- application/game and version;
-- supported mode (native VR, virtual screen, MR overlay or streaming);
-- setup success and recovery from disconnect;
-- sustained frame-time distribution and missed-frame rate;
-- tracking stability and controller functionality;
-- audio, microphone and sleep/wake behavior;
-- temperature, power and network statistics;
-- known issues and repeatability.
-
-Test at least one short session and one sustained session. Use the target manufacturer's requirements and user-comfort criteria rather than a single generic FPS threshold.
-
-## 9. Phased implementation
-
-### XR-0 — Discovery and requirements
-Select 2–3 candidate headsets spanning PC VR and virtual-screen/AR-glasses use cases. Review current OS, runtime and connection requirements. No hardware purchase should be based on a connector name alone.
-
-### XR-1 — Virtual screen
-Prove the easiest useful feature: display a normal console/PC screen in a compatible headset or glasses, if supported by the selected device and software. Keep TV output active.
-
-### XR-2 — PC VR proof of concept
-On off-the-shelf hardware, launch a small set of legally acquired applications through a supported runtime. Measure frame pacing, tracking, controller support, stability and recovery.
-
-### XR-3 — MR/AR capabilities
-Add only capabilities available through selected vendor SDKs and hardware: virtual panels, spatial placement, passthrough or hand tracking. Keep vendor-specific features optional.
-
-### XR-4 — Productization
-Only after repeatable tests, choose GPU, ports, cooling and enclosure. Publish a per-headset support matrix and maintain regression testing.
-
-## 10. Decisions still open
-
-1. Which XR headsets and glasses are priority targets?
-2. Is the first release focused on PC VR, a giant virtual screen, or both?
-3. Is wired headset connection required, or is wireless streaming a core requirement?
-4. Which operating system/runtime combination is supportable with the team's QA budget?
-5. What is the target hardware budget and power/noise envelope?
-6. Which spatial features are must-have versus optional?
-
-## Conclusion
-
-XR support should be an architectural capability from the beginning, but it should not become an unbounded promise of universal compatibility. Yugatn Box should retain its TV/monitor mode, introduce virtual-screen support as the first low-risk XR target, and add native VR and AR/MR through tested runtimes and explicit headset-specific compatibility records.
-
-
-## 11. Smartphone motion controller integration
-
-The smartphone companion can serve as an optional gamepad alongside XR devices. It can provide calibrated tilt steering for racing, pitch/roll for flight simulators, and touch controls for throttle, brake, rudder, trim, recenter and menus. This does not require the phone to render XR content.
-
-When the phone is used while a headset is worn, keep essential controls visible and easy to reach; include an immediate pause/disconnect action. Avoid requiring users to look at the phone during high-motion immersive play. XR sessions must continue to support compatible physical controllers where required.
-
-Use orientation values where available rather than mapping raw acceleration directly. Sensor access varies by browser and OS. Require explicit permission, local authenticated pairing, revocable sessions and a fail-safe neutral state on disconnect. See [Smartphone Motion Controller](SMARTPHONE_MOTION_CONTROLLER.md).
+XR следует учитывать в архитектуре с самого начала, но не обещать универсальную совместимость. Первый низкорисковый эксперимент — виртуальный экран; нативный PC VR и AR/MR добавляются по результатам испытаний.
