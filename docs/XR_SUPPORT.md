@@ -142,3 +142,12 @@ Only after repeatable tests, choose GPU, ports, cooling and enclosure. Publish a
 ## Conclusion
 
 XR support should be an architectural capability from the beginning, but it should not become an unbounded promise of universal compatibility. Yugatn Box should retain its TV/monitor mode, introduce virtual-screen support as the first low-risk XR target, and add native VR and AR/MR through tested runtimes and explicit headset-specific compatibility records.
+
+
+## 11. Smartphone motion controller integration
+
+The smartphone companion can serve as an optional gamepad alongside XR devices. It can provide calibrated tilt steering for racing, pitch/roll for flight simulators, and touch controls for throttle, brake, rudder, trim, recenter and menus. This does not require the phone to render XR content.
+
+When the phone is used while a headset is worn, keep essential controls visible and easy to reach; include an immediate pause/disconnect action. Avoid requiring users to look at the phone during high-motion immersive play. XR sessions must continue to support compatible physical controllers where required.
+
+Use orientation values where available rather than mapping raw acceleration directly. Sensor access varies by browser and OS. Require explicit permission, local authenticated pairing, revocable sessions and a fail-safe neutral state on disconnect. See [Smartphone Motion Controller](SMARTPHONE_MOTION_CONTROLLER.md).
