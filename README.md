@@ -129,3 +129,10 @@ Controller Lab использует браузерный Gamepad API, если �
 - [Модель данных и критерии проверки](docs/COMPATIBILITY_DATA_MODEL.md)
 
 Проверка локально: `node scripts/validate-game-catalog.mjs` и `node --test tests/validate-game-catalog.test.mjs`. GitHub Actions запускает эти проверки при изменении каталога и валидатора. Это проверяет структуру данных, а не способность запускать игры.
+
+
+## Product strategy: Player Sovereignty
+
+Yugatn Box is prioritizing a Linux-first, controller-first gaming shell and unified library rather than promising universal local execution of closed-console games. The strategy defines MVP scope, provider interfaces, safe library aggregation, signed updates, privacy defaults, and measurable acceptance gates.
+
+- [Product Strategy: Player Sovereignty](docs/PRODUCT_STRATEGY_PLAYER_SOVEREIGNTY.md)
