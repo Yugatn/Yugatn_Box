@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "games": [
+    {
+      "id": "sample-ps2-entry",
+      "title": "Example PlayStation 2 game entry",
+      "platform": "ps2",
+      "source": "user-entry",
+      "compatibility": {
+        "status": "NOT_TESTED",
+        "lastTested": null,
+        "runtimeId": "pcsx2",
+        "runtimeVersion": null,
+        "hostOS": null,
+        "notes": "Illustrative record only. No title has been tested or launched by this sample.",
+        "evidenceUrl": null
+      },
+      "routes": [
+        {
+          "type": "local-emulator",
+          "label": "PCSX2 runtime (candidate)",
+          "availability": "candidate",
+          "providerId": "emulator-provider",
+          "prerequisites": ["User installs a verified runtime", "User supplies legally obtained game media where permitted"],
+          "limitations": ["Compatibility must be measured per title and host configuration"]
+        }
+      ],
+      "savePolicy": "separate-per-runtime"
+    },
+    {
+      "id": "sample-xbox-series-entry",
+      "title": "Example Xbox Series game entry",
+      "platform": "xbox-series",
+      "source": "user-entry",
+      "compatibility": {
+        "status": "NOT_TESTED",
+        "lastTested": null,
+        "runtimeId": null,
+        "runtimeVersion": null,
+        "hostOS": null,
+        "notes": "Modern console local execution is not implemented by Yugatn Box.",
+        "evidenceUrl": null
+      },
+      "routes": [
+        {
+          "type": "official-remote-play",
+          "label": "Official remote-play path (research)",
+          "availability": "needs-user-setup",
+          "providerId": null,
+          "prerequisites": ["Compatible console or officially supported service", "Official client and account"],
+          "limitations": ["Remote streaming is not local execution on Yugatn Box"]
+        }
+      ],
+      "savePolicy": "remote-managed"
+    }
+  ]
+}
