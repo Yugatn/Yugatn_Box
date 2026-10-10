@@ -187,3 +187,16 @@ For XR, measure the exact headset/application/runtime combination: sustained fra
 10. First set of mandatory games and XR apps.
 
 These decisions must be made after prototyping and measurements.
+
+
+## 14. Smartphone motion controller
+
+Treat the phone as an optional companion gamepad, not a required input device. The phone-side UI handles explicit sensor permission, orientation reading, neutral calibration, recentering, dead zone, sensitivity and axis inversion. Racing maps tilt to steering; flight profiles map tilt to pitch/roll and touch controls to throttle, rudder and trim.
+
+The console-side service accepts normalized virtual-gamepad states over an authenticated local session. Pairing requires a one-time code or QR plus console confirmation; sessions are revocable. Reject stale, malformed, out-of-range and unauthenticated messages. On disconnect, hidden/backgrounded page, permission loss or stale input timeout, neutralize all axes and release all buttons.
+
+Prefer fused device orientation for tilt control; raw accelerometer data includes gravity and is often too noisy for direct steering. Sensor support and axis conventions vary, so provide capability detection and touch fallback. Process motion locally and do not store/upload raw sensor history by default. Do not expose remote input to the public internet by default.
+
+Initial transport candidates are an authenticated local WebSocket for a simple prototype and WebRTC data channels for later evaluation. Choose only after latency, jitter, packet loss, security and reconnection tests. The phone UI demo does not implement pairing or transmit input.
+
+See [SMARTPHONE_MOTION_CONTROLLER.md](SMARTPHONE_MOTION_CONTROLLER.md) for profiles, protocol, fail-safes, test matrix and acceptance criteria.
