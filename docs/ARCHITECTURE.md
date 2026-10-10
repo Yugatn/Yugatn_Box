@@ -1,202 +1,183 @@
-# Yugatn Box — System Architecture
+# Системная архитектура Yugatn Box
 
-## 1. Design principles
+## 1. Принципы проектирования
 
-- Start with off-the-shelf hardware; defer a custom motherboard until demand and requirements are validated.
-- Separate the console shell, game runtimes, streaming, mobile companion and XR integration.
-- Support tested configurations and publish limitations.
-- Treat security, updateability, accessibility and repairability as first-class requirements.
-- Do not bypass DRM, hardware checks or closed-platform security without lawful authority and permission.
-- Treat VR/AR/MR/XR as supported modes with their own device/runtime requirements, not as a generic display connector.
+- Начать с готового оборудования, не разрабатывать собственную материнскую плату до проверки спроса.
+- Разделить системную оболочку, игровые среды, потоковую передачу и мобильный клиент.
+- Поддерживать только проверенные конфигурации и публиковать ограничения.
+- Считать безопасность, обновляемость, доступность и ремонтопригодность требованиями первого класса.
+- Не обходить DRM, аппаратные проверки или механизмы защиты закрытых платформ без законного основания и разрешения правообладателя.
 
-## 2. System overview
+## 2. Архитектурные блоки
 
 ```text
-TV / Monitor (HDMI)       VR / AR / MR headset or glasses
-        |                              |
-        +--------- Display Router -----+
-                       |
-          Yugatn Box shell / Big-screen UI
-                       |
-       Launcher + Library + Compatibility Registry
-                       |
-       Runtime adapters: PC / compatibility / streaming
-                       |
-             XR Device & Session Manager
-                       |
-             Host OS + GPU drivers
-                       |
-         x86-64 CPU/GPU + RAM + NVMe + Network
-                       |
-        Phone Companion / local streaming
+TV / Monitor (HDMI)
+        |
+Yugatn Box shell / Big-screen UI
+        |
+Launcher + Library Index + Compatibility Status
+        |
+Runtime adapters
+  | PC native | compatibility layer | official streaming | permitted emulation
+        |
+Host OS + GPU drivers + update/recovery service
+        |
+x86-64 APU/CPU + GPU + RAM + NVMe + networking
+        |
+Phone Companion over local network
 ```
 
-Conceptual architecture only; this is not a report of implemented or tested functionality.
+Схема концептуальная. Она не описывает уже реализованный код.
 
-## 3. Hardware layer
+### A. Hardware layer
 
-For the prototype, use a retail x86-64 mini-PC or desktop with integrated or discrete graphics. This makes it possible to validate OS, controller UI, streaming and XR before investing in custom hardware.
+Для прототипа — серийный x86-64 мини-ПК или обычный ПК с интегрированной/дискретной графикой. Такой путь позволяет быстро проверить ОС, контроллерный интерфейс и потоковую передачу без затрат на заказной кремний.
 
-Preliminary reference goals to validate through tests:
-- Modern x86-64 platform with maintained GPU drivers; choose the exact part after benchmarks.
-- 16 GB RAM as a research baseline; 32 GB as a target for broader PC-game and background workloads.
-- 1 TB NVMe SSD in the target configuration, replaceable/expandable where practical.
-- HDMI 2.1 desirable for modern TVs/monitors; actual resolution, refresh, VRR and HDR depend on GPU, driver, cable and display.
-- Ethernet for baseline tests; Wi-Fi 6 or newer desirable for local streaming.
-- Multiple USB-A/USB-C ports for controllers, audio and peripherals.
-- Sustained cooling, acceptable acoustics and power consumption.
+Предварительные цели для референсного устройства, подлежащие проверке прототипом:
 
-### XR-specific hardware considerations
+- CPU/GPU: современная x86-64 платформа с поддерживаемыми драйверами; точная модель выбирается после бенчмарков.
+- RAM: 16 ГБ как минимальная исследовательская конфигурация; 32 ГБ как целевая конфигурация для более широкого набора PC-игр и фоновых задач.
+- Storage: NVMe SSD 1 ТБ в целевой конфигурации; доступный слот для замены/расширения.
+- Video: HDMI 2.1 желателен для поддержки современных телевизоров и мониторов; реальные разрешение, частота, VRR и HDR зависят от GPU, драйверов, кабеля и дисплея.
+- Networking: Ethernet обязателен для тестов; Wi-Fi 6 или новее желательно для локального стриминга.
+- USB: несколько USB-A/USB-C портов для контроллеров, гарнитур и накопителей.
+- Cooling: устойчивый шумовой и температурный профиль под длительной игровой нагрузкой.
+- Power: сертифицированный блок питания с запасом под пиковую нагрузку.
 
-XR hardware cannot be selected from HDMI support alone. Headsets vary in required video link, USB data/power, runtime, tracking and GPU capability.
+Это не окончательная спецификация и не обещание 4K/120 FPS во всех играх. Производительность должна подтверждаться по каждой тестовой конфигурации.
 
-- Verify the exact headset connection: DisplayPort, USB-C DisplayPort Alt Mode, a vendor link box, or supported wireless streaming.
-- A USB-C port does not automatically support DisplayPort Alt Mode, USB4 or Thunderbolt; inspect the specific device's port specification.
-- HDMI output to a TV does not automatically provide the video transport required by a headset.
-- Select the GPU against the target headset and application's render requirements, including sustained frame-time stability.
-- Check USB bandwidth/power for tracking accessories and validate the required sensors/base stations.
-- Test thermal behavior under sustained XR load.
-- Keep TV/monitor output available as a recovery and setup path.
+### B. Host OS
 
-No universal headset resolution, refresh rate, GPU tier or latency target is claimed before a target device is selected.
+Нужно провести сравнительный прототип, а не заранее выбрать ОС без данных.
 
-## 4. Host OS
+**Вариант Linux-first:** игровой режим на базе Linux, контроллерный UI и проверенные слои совместимости, включая Proton там, где применимо. Преимущества — контроль над оболочкой и обновлениями. Ограничения — античит, DRM, драйверы и отдельные игры могут не работать.
 
-Prototype Linux-first and Windows-first on comparable hardware.
+**Вариант Windows-first:** более широкий доступ к нативным PC-играм и некоторым лаунчерам. Ограничения — лицензирование, обновления, фоновые процессы и необходимость создать устойчивый консольный UX.
 
-**Linux-first:** allows control over the console shell and update path; limitations may include anti-cheat, DRM, drivers and headset runtime support.
+**Рекомендация:** сначала проверить оба варианта на одинаковом оборудовании и наборе игр. Не обещать двойную загрузку в MVP, если она удваивает расходы поддержки.
 
-**Windows-first:** potentially broader access to PC games and XR runtimes; requires work on console UX, update behavior, background services and licensing.
+### C. Big-screen UI
 
-**Recommendation:** choose based on repeatable game and headset tests, not ideology. XR runtime availability and support must be a scored selection criterion.
+Главный экран должен включать:
+- «Продолжить» и последние игры;
+- библиотеку с фильтрами по платформе и статусу совместимости;
+- запуск поддерживаемых магазинов/лаунчеров в разрешённых сценариях;
+- устройства и контроллеры;
+- настройки сети, экрана, звука и энергопотребления;
+- загрузки, обновления, сохранения и состояние хранилища;
+- доступный режим восстановления и диагностики.
 
-## 5. Big-screen UI
+Интерфейс должен быть пригоден для навигации с геймпада, клавиатуры и смартфона. Все системные операции должны быть доступны без обязательной мыши.
 
-The controller-first shell should provide:
-- Continue and recent games;
-- library filtered by source and compatibility status;
-- supported launcher access;
-- devices and controllers;
-- display/audio/network/power settings;
-- downloads, updates, storage and saves;
-- XR Devices: headset detection, supported modes, runtime status, setup and session exit;
-- a visible way to return to TV/monitor mode;
-- diagnostics and recovery.
+### D. Compatibility manager
 
-All core system operations should be accessible without requiring a mouse.
+Для каждой игры хранить:
+- идентификатор и источник;
+- версию игры, ОС, драйвера и runtime;
+- тип запуска;
+- статус совместимости;
+- разрешение, графические настройки и измеренные FPS, если они проверены;
+- известные проблемы;
+- дату и конфигурацию последнего теста;
+- источник лицензии/магазина и обязательные условия запуска, без хранения паролей и секретов.
 
-## 6. Game compatibility manager
+Статус игры не может быть выведен только из факта, что она однажды открылась до главного меню. Нужны тесты запуска, игрового процесса, сохранения/загрузки, выхода, контроллера и сетевых функций там, где они требуются.
 
-For every game record:
-- game ID and source;
-- game version, OS, driver and runtime;
-- launch method and compatibility status;
-- tested resolution/settings and measured FPS when available;
-- known issues and test date;
-- licence/source notes without storing passwords or secrets.
+### E. Phone Companion
 
-Opening to the title screen alone is not a successful compatibility test.
+Мобильное приложение — отдельный клиент, не «второй GPU» для консоли.
 
-## 7. XR subsystem
+MVP-функции:
+- обнаружение консоли в доверенной локальной сети;
+- сопряжение с явным подтверждением на консоли;
+- сенсорный пульт и клавиатура;
+- тачпад/мышиный ввод;
+- просмотр состояния консоли и загрузок;
+- локальный Remote Play для поддерживаемых игр;
+- выбор качества потока и отображение текущей задержки;
+- отзыв сессий и удаление сопряжённых устройств.
 
-Keep XR independent from the shell and game catalogue.
+Не передавать Remote Play через интернет по умолчанию. Удалённый доступ потребует отдельной модели угроз, аутентификации, шифрования и настройки маршрутизации.
 
-### Device Discovery
-Detect only capabilities exposed by the OS/runtime and record the exact model, firmware and connection method.
+### F. Streaming pipeline
 
-### XR Compatibility Registry
-Track headset, connection, OS, driver, runtime, application, supported mode, test evidence and known issues.
+Консоль захватывает изображение и звук, кодирует поток аппаратным или программным кодировщиком и передаёт его смартфону по локальной сети. Смартфон декодирует поток и возвращает события управления.
 
-### Runtime Adapter
-Integrate supported runtimes, investigating OpenXR where the selected headset, OS, driver and app support it. OpenXR does not guarantee universal hardware or game compatibility.
+Задержку измерять раздельно: захват, кодирование, сеть, декодирование, отображение и обратный ввод. Показатель «работает по Wi-Fi» недостаточен для доказательства пригодности к соревновательным играм.
 
-### XR Session Manager
-Manage start/stop, focus, sleep/wake, disconnects, runtime crashes and return to regular display.
+### G. Updates and recovery
 
-### Display Router
-Offer TV/monitor, native XR and virtual-screen modes only when supported by the exact device and software.
+- Подписанные обновления и проверка целостности.
+- Разделение системных файлов и пользовательских данных.
+- Атомарное обновление или безопасный откат.
+- Журнал версии, состояния обновления и причины неудачи.
+- Резервное копирование пользовательских настроек и поддерживаемых сохранений.
+- Диагностический режим без сброса данных по умолчанию.
+- Явное подтверждение перед удалением данных.
 
-### Performance Monitor
-Record frame time, missed frames, reprojection status where exposed, dropped frames, temperatures, power and connection stability.
+### H. Privacy and security
 
-### Input Mapper
-Support standard gamepads and compatible tracked controllers. Do not assume all games accept hand tracking or every controller.
+- Уникальные локальные учётные данные устройства; никакого общего заводского пароля.
+- Сопряжение смартфона с подтверждением пользователя.
+- Минимальный сбор аналитики; передача внешней телеметрии выключена до информированного согласия.
+- Не хранить пароли магазинов и токены в открытом виде.
+- Изоляция игрового процесса и системных сервисов по возможности.
+- Обновления безопасности, инвентаризация компонентов и процедура раскрытия уязвимостей.
+- Сетевые службы выключены, если не нужны.
+- Защита от поддельного устройства, повторного использования токенов и несанкционированного удалённого управления.
 
-### AR/MR Adapter
-Keep passthrough, room mapping, spatial anchors, hand tracking and eye tracking behind vendor/runtime-specific capability checks and explicit permissions.
+## 3. Контроллеры и периферия
 
-### XR safety and privacy
-Do not auto-launch immersive content. Provide immediate exit, clear recovery, and optional comfort settings. Treat gaze, room scans, camera, microphone and spatial maps as sensitive data: no optional upload without explicit consent and a defined purpose.
+На MVP проверить распространённые USB- и Bluetooth-геймпады, клавиатуры, мыши и гарнитуры. Не заявлять универсальную поддержку адаптивных триггеров, гироскопа, проприетарных аксессуаров или каждого руля/аркадного контроллера без отдельного теста.
 
-## 8. Phone Companion
+## 4. Производительность и критерии
 
-MVP:
-- discover console on a trusted local network;
-- pair with explicit confirmation on the console;
-- touch remote, keyboard and trackpad;
-- console status and downloads;
-- local Remote Play for supported games;
-- revoke sessions and paired devices.
+Не задавать один рекламный показатель FPS для всех игр. Использовать тестовую матрицу:
+- разрешение и масштабирование;
+- средний FPS и 1% low;
+- frame pacing;
+- время загрузки;
+- температура, мощность и шум;
+- задержка ввода локально и по стримингу;
+- устойчивость после нескольких часов;
+- ошибки драйвера, зависания и восстановление.
 
-Do not expose remote control to the internet by default. Internet access needs a separate threat model, authentication, encryption and routing design.
+## 5. Открытые технические решения
 
-## 9. Streaming pipeline
+1. Linux-first или Windows-first.
+2. Целевой бюджет BOM и розничная цена.
+3. Интегрированная или дискретная графика.
+4. Требования к HDR, VRR, HDMI и аудио.
+5. Протокол потоковой передачи и кодеки.
+6. Поддержка облачных сервисов в каждой целевой стране.
+7. Механизм лицензирования, аккаунтов и обновлений.
+8. Набор обязательных тестовых игр.
 
-Capture video/audio, encode, transmit to a paired device, decode, and return input events. Measure capture, encode, network, decode, display and input-return latency separately. For wireless PC VR, test the headset's supported transport and codec; ordinary Wi-Fi support is not enough to prove a usable XR experience.
-
-## 10. Updates and recovery
-
-- signed updates and integrity checks;
-- separate system and user data;
-- atomic update or safe rollback;
-- version and failure logs;
-- backup for supported settings/saves;
-- diagnostics without default data wipe;
-- explicit confirmation before destructive operations;
-- recovery to TV/monitor mode if XR initialization fails.
-
-## 11. Security
-
-- unique device credentials; no shared factory password;
-- explicit pairing and revocable sessions;
-- minimum analytics, external telemetry off until informed consent;
-- no plaintext store passwords/tokens;
-- isolate game processes and system services where practical;
-- security updates and vulnerability disclosure procedure;
-- disable unneeded network services;
-- require permission for camera, microphone, eye tracking and room-mapping data;
-- never bypass DRM or platform protections as a standard product mechanism.
-
-## 12. Performance and QA
-
-For flat-screen games, measure average FPS, 1% low, frame pacing, load time, thermals, power, noise and stability.
-
-For XR, measure the exact headset/application/runtime combination: sustained frame time, missed frames, reprojection where available, tracking stability, controller support, connection loss, sleep/wake, temperature, power and comfort-related user feedback. Do not substitute flat-screen FPS for XR performance.
-
-## 13. Open decisions
-
-1. Linux-first or Windows-first.
-2. Hardware budget and target retail price.
-3. Integrated or discrete GPU.
-4. HDMI/HDR/VRR requirements.
-5. Target VR headset(s) and AR glasses.
-6. Wired versus wireless XR as a priority.
-7. XR runtime and video-link requirements.
-8. Streaming protocol/codecs.
-9. Storefronts, licensing and regional service availability.
-10. First set of mandatory games and XR apps.
-
-These decisions must be made after prototyping and measurements.
+Эти решения должны приниматься после прототипирования и измерений, а не на основе маркетинговых обещаний.
 
 
-## 14. Smartphone motion controller
+## 14. XR-подсистема
 
-Treat the phone as an optional companion gamepad, not a required input device. The phone-side UI handles explicit sensor permission, orientation reading, neutral calibration, recentering, dead zone, sensitivity and axis inversion. Racing maps tilt to steering; flight profiles map tilt to pitch/roll and touch controls to throttle, rudder and trim.
+XR должен быть отдельным слоем, а не жёстко встроенной зависимостью оболочки:
+- **Обнаружение устройства** — определение модели, соединения и возможностей, реально доступных ОС/runtime.
+- **Реестр совместимости XR** — гарнитура, прошивка, ОС, драйвер, runtime, приложение, режим и результаты тестов.
+- **Адаптер runtime** — интеграция с поддерживаемой средой, включая OpenXR только там, где её поддерживают устройство, ОС, драйвер и приложение.
+- **Менеджер XR-сеансов** — запуск/остановка, потеря фокуса, сон/пробуждение, отключение гарнитуры и сбои runtime.
+- **Маршрутизатор вывода** — TV/monitor, виртуальный экран или нативный XR только при подтверждённой поддержке.
+- **Монитор производительности** — время кадра, пропуски, reprojection при наличии метрик, температура, питание и стабильность связи.
+- **Адаптер AR/MR** — passthrough, пространственное картирование, трекинг рук и взгляда только при поддержке устройства и явном разрешении.
+- **Резервный путь** — возможность вернуться к обычному экрану, если XR-сеанс не запускается или завершается аварийно.
 
-The console-side service accepts normalized virtual-gamepad states over an authenticated local session. Pairing requires a one-time code or QR plus console confirmation; sessions are revocable. Reject stale, malformed, out-of-range and unauthenticated messages. On disconnect, hidden/backgrounded page, permission loss or stale input timeout, neutralize all axes and release all buttons.
+USB-C не гарантирует DisplayPort Alt Mode, а HDMI-выход консоли не означает, что гарнитура может подключаться к нему напрямую. Интерфейс и требования проверяются для каждой модели.
 
-Prefer fused device orientation for tilt control; raw accelerometer data includes gravity and is often too noisy for direct steering. Sensor support and axis conventions vary, so provide capability detection and touch fallback. Process motion locally and do not store/upload raw sensor history by default. Do not expose remote input to the public internet by default.
+## 15. Смартфон как контроллер движения
 
-Initial transport candidates are an authenticated local WebSocket for a simple prototype and WebRTC data channels for later evaluation. Choose only after latency, jitter, packet loss, security and reconnection tests. The phone UI demo does not implement pairing or transmit input.
+Телефон — необязательный дополнительный геймпад, а не замена физическому контроллеру. На телефоне выполняются запрос разрешения, чтение ориентации, калибровка нейтрали, мёртвая зона, чувствительность и инверсия осей. Гонки используют наклон для руления; авиасимуляторы — настраиваемые тангаж/крен, а сенсорные кнопки — газ, тормоз, руль направления и триммер.
 
-See [SMARTPHONE_MOTION_CONTROLLER.md](SMARTPHONE_MOTION_CONTROLLER.md) for profiles, protocol, fail-safes, test matrix and acceptance criteria.
+Консоль принимает нормализованные состояния виртуального геймпада через аутентифицированную локальную сессию. Сопряжение требует одноразового кода или QR и подтверждения на консоли; сессию можно отозвать. Некорректные, устаревшие, выходящие за допустимые пределы и неаутентифицированные сообщения отклоняются. При отключении телефона, потере фокуса, разрешения или свежих данных все оси возвращаются в нейтраль, кнопки освобождаются.
+
+Для управления наклоном предпочтительнее данные ориентации, объединяющие показания датчиков, а не прямое использование сырого ускорения: оно включает гравитацию и может быть шумным. Поддержка датчиков различается; при отказе разрешения должны оставаться доступными сенсорные кнопки. Данные движения обрабатываются локально и по умолчанию не сохраняются и не загружаются.
+
+В качестве первого транспорта можно исследовать аутентифицированный локальный WebSocket; WebRTC DataChannel — альтернативный вариант для дальнейших испытаний. Выбор делается после измерения задержки, джиттера, потерь пакетов, безопасности и восстановления соединения. Не открывать удалённое управление в публичный интернет по умолчанию.
+
+Подробные требования, тестовая матрица и критерии приёмки: [SMARTPHONE_MOTION_CONTROLLER.md](SMARTPHONE_MOTION_CONTROLLER.md).
