@@ -164,3 +164,11 @@ The compatibility record and test report are separate artifacts. Wishlist entrie
 Local execution, compatibility layers, emulation, official remote play, cloud streaming and external capture are distinct routes. Never silently replace a failed local launch with a streaming route. The user must see prerequisites and consent to accounts/network/data transfer.
 
 The MVP and its differentiation are defined in [MVP_SCOPE.md](MVP_SCOPE.md); the public data contract is in [COMPATIBILITY_INDEX.md](COMPATIBILITY_INDEX.md).
+
+## Validation and input boundary
+
+Compatibility data is validated with Ajv against the catalog, game-entry and test-report schemas. Negative fixtures guard against status inflation and malformed reports. CI is evidence about data integrity only, not evidence that a game launches or that the UI works at runtime.
+
+The browser shell uses the Gamepad API for navigation and activation. It does not launch arbitrary local binaries: a browser page cannot safely or portably execute host programs. The future launch provider must be a separately installed, explicitly permissioned local service or native application with a narrow command allowlist, explicit user action, process isolation, exit-code capture and recovery to the shell. Never accept arbitrary commands from catalog metadata.
+
+Hardware and OS remain unselected. Follow [REFERENCE_PROFILE.md](REFERENCE_PROFILE.md) before generating verified compatibility claims.
