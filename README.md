@@ -77,3 +77,13 @@ XR compatibility is device-, OS-, driver-, runtime- and application-specific. HD
 ## Принцип разработки
 
 Сначала доказать работоспособность программного прототипа и измерить пользовательскую ценность. Затем выбирать оборудование. Не путать проектную гипотезу, успешно пройденный тест, официальную совместимость и лицензионное разрешение.
+
+
+## Smartphone as a motion controller
+
+A phone can be an optional companion gamepad, using calibrated tilt for racing steering and configurable pitch/roll for flight simulators. The touchscreen can provide throttle, brake, rudder, trim, recenter and other buttons. Physical controllers remain supported.
+
+- [Smartphone Motion Controller specification](docs/SMARTPHONE_MOTION_CONTROLLER.md)
+- [Motion Pad sensor/UI demo](prototype/motion-pad.html)
+
+The demo reads device orientation locally when the browser permits it. It is not paired with the console and does not send game input. Real control requires authenticated local pairing, a console-side input backend, fail-safe neutralization, and measured latency.
