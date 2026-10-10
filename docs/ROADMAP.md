@@ -1,133 +1,124 @@
-# Дорожная карта Yugatn Box
+# Yugatn Box Roadmap
 
-**Статус:** план работ; ни один этап не считается завершённым до появления проверяемых артефактов и результатов.
+**Status:** planned work. An item is not complete until testable artifacts and results exist.
 
-## Этап 0. Формирование требований
+## Stage 0 — Requirements
+- Identify launch market, target user and price range.
+- Conduct 15–25 user interviews.
+- Prioritize games, stores, controllers, TV use and phone features.
+- Define a legal checklist for game distribution, streaming, emulation, trademarks and licensing.
+- Choose 2–3 candidate XR devices: at least one PC VR headset and one virtual-screen/AR-glasses use case if feasible.
+- Document their connection, OS, runtime, GPU and vendor requirements.
 
-### Работы
-- Определить стартовую страну и целевую аудиторию.
-- Провести 15–25 интервью с потенциальными пользователями.
-- Собрать приоритетный список PC-игр, магазинов, контроллеров и функций.
-- Выбрать целевую ценовую вилку и допустимый уровень шума/энергопотребления.
-- Сформировать правовой чек-лист для игр, стриминга, эмуляции, брендинга и дистрибуции.
+**Exit criteria:** validated user problem, prioritized requirements, risk register, XR target shortlist, and no unsupported promise of native closed-console compatibility.
 
-### Критерии выхода
-- Сформулирована проверяемая проблема пользователя.
-- Зафиксированы приоритеты и отложенные функции.
-- Составлен перечень рисков и предположений.
-- Нет обещания нативной поддержки закрытых консолей без разрешений.
+## Stage 1 — PC-based console shell
+- Compare Linux-first and Windows-first configurations on similar hardware.
+- Implement controller-first shell.
+- Launch a limited set of PC games from supported sources.
+- Implement the compatibility catalogue.
+- Support HDMI output, audio, controllers, sleep and recovery.
+- Minimize logs and telemetry.
 
-## Этап 1. Программный прототип на готовом ПК
+**Exit criteria:** at least 10 selected games tested against a published matrix; core UI usable with a controller; reproducible update/rollback; limitations visible.
 
-### Работы
-- Установить Linux-first и Windows-first тестовые конфигурации на сопоставимом оборудовании.
-- Создать стартовую оболочку, управляемую геймпадом.
-- Добавить каталог и запуск ограниченного набора PC-игр.
-- Создать каталог статусов совместимости.
-- Поддержать HDMI-вывод, аудио, контроллеры, режим сна и восстановление.
-- Настроить журналирование ошибок с минимальным сбором данных.
+## Stage 2 — Phone Companion
+- Implement mobile prototype and secure pairing with console confirmation.
+- Add remote, keyboard and trackpad.
+- Prototype local streaming.
+- Display measured latency and stream quality.
+- Add session revocation and disconnect handling.
 
-### Критерии выхода
-- Не менее 10 заранее выбранных игр проверены по опубликованной матрице.
-- Системный UI полностью управляется контроллером.
-- Есть воспроизводимый процесс обновления и отката.
-- Все ограничения видны пользователю.
+**Exit criteria:** pairing is explicit and revocable; median and 95th-percentile latency measured; packet-loss and reconnection tests pass; remote access is not exposed to the internet by default.
 
-## Этап 2. Phone Companion и Remote Play
+## Stage 3 — XR-0: Device and runtime discovery
+- Validate ports, adapters, power and bandwidth for selected headsets.
+- Install supported runtimes on off-the-shelf host hardware.
+- Detect device capabilities without assuming universal support.
+- Document per-headset setup and recovery.
 
-### Работы
-- Создать мобильный прототип.
-- Реализовать безопасное сопряжение с подтверждением на консоли.
-- Реализовать пульт, клавиатуру и тачпад.
-- Реализовать локальный поток для поддерживаемых сценариев.
-- Показывать измеренные показатели задержки и качества потока.
-- Добавить отзыв сопряжения и завершение сессии.
+**Exit criteria:** repeatable connection, documented runtime versions, reliable return to TV/monitor after disconnect, no unsupported compatibility claims.
 
-### Критерии выхода
-- Подключение возможно только после явного подтверждения.
-- Измерены медианная и 95-я перцентиль задержки в тестовой сети.
-- Есть тесты потери пакетов, переподключения и выхода из сессии.
-- Удалённое управление не открывается в интернет без отдельной настройки и модели угроз.
+## Stage 4 — XR-1: Virtual screen
+- Test ordinary PC games in a large virtual screen on compatible headsets/glasses where supported.
+- Keep TV/monitor mode available.
+- Measure display clarity, stability, latency, audio and comfort feedback.
+- Distinguish virtual-screen support from native VR.
 
-## Этап 3. Совместимость и надёжность
+**Exit criteria:** supported devices and configurations documented; user can exit cleanly; limitations are clear.
 
-### Работы
-- Автоматизировать запуск, сохранение/загрузку и выход.
-- Проверить долгие игровые сессии, обновления и нехватку места.
-- Создать матрицу драйверов и runtime.
-- Добавить сбор обезличенных диагностических данных только по согласию.
-- Проверить поведение при отказе сети и стороннего сервиса.
-- Провести независимый обзор безопасности.
+## Stage 5 — XR-2: Native PC VR proof of concept
+- Test a small, legally acquired set of XR applications.
+- Integrate supported runtime, investigating OpenXR where applicable.
+- Measure sustained frame time, missed frames, tracking, controllers, audio, sleep/wake and thermal behavior.
+- Test session start/stop and runtime crashes.
 
-### Критерии выхода
-- Повторяемые тесты на двух одинаковых конфигурациях дают сопоставимый результат.
-- Нет критических дефектов потери данных и несанкционированного управления.
-- Каталог не содержит статусов Verified без отчёта.
-- Сформирован публичный список известных проблем.
+**Exit criteria:** per-device test report, repeatable session start/exit, no critical data/privacy/security defects, known issues published.
 
-## Этап 4. Референсное железо
+## Stage 6 — XR-3: AR/MR capabilities
+- Add only capabilities supported by selected hardware/SDKs: virtual panels, spatial placement, passthrough, hand tracking or other features.
+- Use explicit permissions for camera, microphone, eye tracking and room mapping.
+- Keep vendor-specific features behind adapters.
 
-### Работы
-- Сравнить 2–3 доступные x86-64 платформы.
-- Измерить производительность, мощность, шум, температуру и стоимость.
-- Выбрать корпус, охлаждение, питание, порты и возможность ремонта.
-- Подготовить расчёт BOM, сборки, гарантии, возвратов, логистики и запасных частей.
-- Проверить сертификационные требования целевых рынков.
+**Exit criteria:** capability-specific tests, privacy review and fallback behavior. No generic claim that all AR glasses support spatial overlays.
 
-### Критерии выхода
-- Выбранная конфигурация выдерживает нагрузку без термального троттлинга, нарушающего целевые сценарии.
-- Себестоимость и розничная цена подтверждены коммерческими предложениями, а не предположениями.
-- Подготовлен план ремонта и обновления.
-- Есть план безопасности цепочки поставок.
+## Stage 7 — Compatibility and reliability
+- Automate game launch/save/exit tests.
+- Test long sessions, updates, low storage and network loss.
+- Build regression matrices for OS, drivers, game runtimes and XR headsets.
+- Independent security review.
 
-## Этап 5. Закрытая бета
+**Exit criteria:** repeatable results; no critical data-loss or unauthorized-control defects; no Verified status without evidence.
 
-### Работы
-- Передать прототип ограниченной группе добровольцев.
-- Получать отчёты об ошибках с явным согласием.
-- Проверить понятность интерфейса, совместимость и поддержку.
-- Измерить частоту сбоев, успешность первого запуска, время до игры и возвраты к предыдущим решениям.
-- Не использовать закрытые игровые каталоги без разрешения.
+## Stage 8 — Reference hardware
+- Compare 2–3 x86-64 platforms.
+- Measure game and XR performance, power, noise, thermals and cost.
+- Choose enclosure, cooling, ports and repair path.
+- Obtain BOM, assembly, warranty, returns, logistics and spare-parts estimates.
+- Check target-market certification requirements.
 
-### Критерии выхода
-- Заданы и достигнуты целевые показатели стабильности и удовлетворённости.
-- Критические ошибки имеют исправление или план устранения.
-- Есть прозрачная политика приватности и поддержки.
-- Есть основания для решения о продолжении или остановке проекта.
+**Exit criteria:** selected configuration meets defined sustained-load targets; cost based on supplier quotes; repair and supply-chain plans exist.
 
-## Этап 6. Коммерческая подготовка
+## Stage 9 — Closed beta
+- Invite a limited volunteer group.
+- Collect diagnostic reports only with consent.
+- Measure first-run success, crash rate, compatibility, usability and support burden.
+- Do not use closed game catalogues without permission.
 
-- Получить необходимые лицензии и разрешения.
-- Завершить сертификацию оборудования и радиомодулей для целевых стран.
-- Подготовить дистрибуцию, гарантию, ремонт, возвраты и поддержку.
-- Подготовить договоры с поставщиками и сервисами.
-- Проверить товарный знак и название Yugatn Box.
-- Публиковать только проверенные технические и совместимые возможности.
+**Exit criteria:** stability and satisfaction targets met; critical issues resolved or transparently blocked; privacy and support policies ready.
 
-## Сквозные потоки
+## Stage 10 — Commercial readiness
+- Secure required licences and agreements.
+- Complete hardware/radio certifications.
+- Prepare distribution, warranty, repairs, returns and support.
+- Verify trademark and product name.
+- Publish only measured compatibility and performance claims.
 
-### A. Лицензирование и право
-Не обходить DRM и не распространять закрытые игры, прошивки или ключи. До выпуска получить консультацию юриста по выбранным странам и сервисам.
+## Cross-cutting workstreams
 
-### B. Безопасность
-Уникальные учётные данные, подписанные обновления, безопасное сопряжение, модель угроз для Remote Play, минимизация данных, обновления безопасности и процедура раскрытия уязвимостей.
+### Licensing
+Do not bypass DRM or redistribute closed games, firmware or keys. Obtain jurisdiction-specific legal advice and licences as needed.
 
-### C. QA
-Тестовая матрица, версии конфигураций, регрессионные тесты, сбор отчётов, известные проблемы и критерии блокировки релиза.
+### Security and privacy
+Unique device credentials, signed updates, secure pairing, XR permission controls, threat model for remote play, data minimization and vulnerability disclosure.
 
-### D. Экономика
-Себестоимость компонентов, сборка, упаковка, логистика, гарантийный резерв, возвраты, лицензии, поддержка, инфраструктура и маржа. Не утверждать цену до получения реальных котировок.
+### QA
+Versioned test matrix, regression tests, reports, known issues and release-blocking criteria.
 
-## Решения, требующие участия основателя
+### Economics
+BOM, assembly, packaging, logistics, warranty reserve, returns, licences, support, infrastructure and margin. No final price before supplier quotes.
 
-1. Стартовый рынок: одна страна или международный запуск?
-2. Целевой бюджет устройства?
-3. Приоритет: дешёвый доступ к PC-играм или максимальная производительность?
-4. Нужен ли дисковод?
-5. Какой смартфонный сценарий важнее: пульт, локальный стриминг или мобильная версия оболочки?
-6. Какая первая десятка игр должна быть поддержана?
-7. Допустим ли Linux-first MVP, если часть античит-игр не запустится?
+## Decisions for the project owner
 
-## Правило управления проектом
+1. Target market and hardware budget.
+2. Low-cost PC-game access versus higher-end performance.
+3. Disc drive or all-digital.
+4. Phone remote, local streaming or both.
+5. First ten PC games.
+6. First two XR targets.
+7. Is virtual-screen mode the XR MVP, with native VR after it?
+8. Is wired XR acceptable for the first prototype, or is wireless a core requirement?
 
-Каждая крупная функция должна иметь: описание проблемы, гипотезу, альтернативы, критерии приёмки, тесты, ограничения, риски и статус. Проектная гипотеза не считается доказанной до измерений. Если ключевая гипотеза о спросе или совместимости не подтверждается, план пересматривается до инвестиций в заказное оборудование.
+## Project governance
+
+Each major feature needs a user problem, hypothesis, alternatives, acceptance criteria, tests, limitations, risks and status. Hypotheses are not proven until measured. If demand, compatibility or cost assumptions fail, revise the plan before custom hardware investment.
