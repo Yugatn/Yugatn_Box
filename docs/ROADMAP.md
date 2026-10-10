@@ -1,134 +1,164 @@
-# Yugatn Box Roadmap
+# Дорожная карта Yugatn Box
 
-**Status:** planned work. An item is not complete until testable artifacts and results exist.
+**Статус:** план работ; ни один этап не считается завершённым до появления проверяемых артефактов и результатов.
 
-## Stage 0 — Requirements
-- Identify launch market, target user and price range.
-- Conduct 15–25 user interviews.
-- Prioritize games, stores, controllers, TV use and phone features.
-- Define a legal checklist for game distribution, streaming, emulation, trademarks and licensing.
-- Choose 2–3 candidate XR devices: at least one PC VR headset and one virtual-screen/AR-glasses use case if feasible.
-- Document their connection, OS, runtime, GPU and vendor requirements.
+## Этап 0. Формирование требований
 
-**Exit criteria:** validated user problem, prioritized requirements, risk register, XR target shortlist, and no unsupported promise of native closed-console compatibility.
+### Работы
+- Определить стартовую страну и целевую аудиторию.
+- Провести 15–25 интервью с потенциальными пользователями.
+- Собрать приоритетный список PC-игр, магазинов, контроллеров и функций.
+- Выбрать целевую ценовую вилку и допустимый уровень шума/энергопотребления.
+- Сформировать правовой чек-лист для игр, стриминга, эмуляции, брендинга и дистрибуции.
 
-## Stage 1 — PC-based console shell
-- Compare Linux-first and Windows-first configurations on similar hardware.
-- Implement controller-first shell.
-- Launch a limited set of PC games from supported sources.
-- Implement the compatibility catalogue.
-- Support HDMI output, audio, controllers, sleep and recovery.
-- Minimize logs and telemetry.
+### Критерии выхода
+- Сформулирована проверяемая проблема пользователя.
+- Зафиксированы приоритеты и отложенные функции.
+- Составлен перечень рисков и предположений.
+- Нет обещания нативной поддержки закрытых консолей без разрешений.
 
-**Exit criteria:** at least 10 selected games tested against a published matrix; core UI usable with a controller; reproducible update/rollback; limitations visible.
+## Этап 1. Программный прототип на готовом ПК
 
-## Stage 2 — Phone Companion
-- Implement mobile prototype and secure pairing with console confirmation.
-- Add remote, keyboard and trackpad.
-- Prototype local streaming.
-- Display measured latency and stream quality.
-- Add session revocation and disconnect handling.
+### Работы
+- Установить Linux-first и Windows-first тестовые конфигурации на сопоставимом оборудовании.
+- Создать стартовую оболочку, управляемую геймпадом.
+- Добавить каталог и запуск ограниченного набора PC-игр.
+- Создать каталог статусов совместимости.
+- Поддержать HDMI-вывод, аудио, контроллеры, режим сна и восстановление.
+- Настроить журналирование ошибок с минимальным сбором данных.
 
-**Exit criteria:** pairing is explicit and revocable; median and 95th-percentile latency measured; packet-loss and reconnection tests pass; remote access is not exposed to the internet by default.
+### Критерии выхода
+- Не менее 10 заранее выбранных игр проверены по опубликованной матрице.
+- Системный UI полностью управляется контроллером.
+- Есть воспроизводимый процесс обновления и отката.
+- Все ограничения видны пользователю.
 
-## Stage 3 — XR-0: Device and runtime discovery
-- Validate ports, adapters, power and bandwidth for selected headsets.
-- Install supported runtimes on off-the-shelf host hardware.
-- Detect device capabilities without assuming universal support.
-- Document per-headset setup and recovery.
+## Этап 2. Phone Companion и Remote Play
 
-**Exit criteria:** repeatable connection, documented runtime versions, reliable return to TV/monitor after disconnect, no unsupported compatibility claims.
+### Работы
+- Создать мобильный прототип.
+- Реализовать безопасное сопряжение с подтверждением на консоли.
+- Реализовать пульт, клавиатуру и тачпад.
+- Реализовать локальный поток для поддерживаемых сценариев.
+- Показывать измеренные показатели задержки и качества потока.
+- Добавить отзыв сопряжения и завершение сессии.
 
-## Stage 4 — XR-1: Virtual screen
-- Test ordinary PC games in a large virtual screen on compatible headsets/glasses where supported.
-- Keep TV/monitor mode available.
-- Measure display clarity, stability, latency, audio and comfort feedback.
-- Distinguish virtual-screen support from native VR.
+### Критерии выхода
+- Подключение возможно только после явного подтверждения.
+- Измерены медианная и 95-я перцентиль задержки в тестовой сети.
+- Есть тесты потери пакетов, переподключения и выхода из сессии.
+- Удалённое управление не открывается в интернет без отдельной настройки и модели угроз.
 
-**Exit criteria:** supported devices and configurations documented; user can exit cleanly; limitations are clear.
+## Этап 3. Совместимость и надёжность
 
-## Stage 5 — XR-2: Native PC VR proof of concept
-- Test a small, legally acquired set of XR applications.
-- Integrate supported runtime, investigating OpenXR where applicable.
-- Measure sustained frame time, missed frames, tracking, controllers, audio, sleep/wake and thermal behavior.
-- Test session start/stop and runtime crashes.
+### Работы
+- Автоматизировать запуск, сохранение/загрузку и выход.
+- Проверить долгие игровые сессии, обновления и нехватку места.
+- Создать матрицу драйверов и runtime.
+- Добавить сбор обезличенных диагностических данных только по согласию.
+- Проверить поведение при отказе сети и стороннего сервиса.
+- Провести независимый обзор безопасности.
 
-**Exit criteria:** per-device test report, repeatable session start/exit, no critical data/privacy/security defects, known issues published.
+### Критерии выхода
+- Повторяемые тесты на двух одинаковых конфигурациях дают сопоставимый результат.
+- Нет критических дефектов потери данных и несанкционированного управления.
+- Каталог не содержит статусов Verified без отчёта.
+- Сформирован публичный список известных проблем.
 
-## Stage 6 — XR-3: AR/MR capabilities
-- Add only capabilities supported by selected hardware/SDKs: virtual panels, spatial placement, passthrough, hand tracking or other features.
-- Use explicit permissions for camera, microphone, eye tracking and room mapping.
-- Keep vendor-specific features behind adapters.
+## Этап 4. Референсное железо
 
-**Exit criteria:** capability-specific tests, privacy review and fallback behavior. No generic claim that all AR glasses support spatial overlays.
+### Работы
+- Сравнить 2–3 доступные x86-64 платформы.
+- Измерить производительность, мощность, шум, температуру и стоимость.
+- Выбрать корпус, охлаждение, питание, порты и возможность ремонта.
+- Подготовить расчёт BOM, сборки, гарантии, возвратов, логистики и запасных частей.
+- Проверить сертификационные требования целевых рынков.
 
-## Stage 7 — Compatibility and reliability
-- Automate game launch/save/exit tests.
-- Test long sessions, updates, low storage and network loss.
-- Build regression matrices for OS, drivers, game runtimes and XR headsets.
-- Independent security review.
+### Критерии выхода
+- Выбранная конфигурация выдерживает нагрузку без термального троттлинга, нарушающего целевые сценарии.
+- Себестоимость и розничная цена подтверждены коммерческими предложениями, а не предположениями.
+- Подготовлен план ремонта и обновления.
+- Есть план безопасности цепочки поставок.
 
-**Exit criteria:** repeatable results; no critical data-loss or unauthorized-control defects; no Verified status without evidence.
+## Этап 5. Закрытая бета
 
-## Stage 8 — Reference hardware
-- Compare 2–3 x86-64 platforms.
-- Measure game and XR performance, power, noise, thermals and cost.
-- Choose enclosure, cooling, ports and repair path.
-- Obtain BOM, assembly, warranty, returns, logistics and spare-parts estimates.
-- Check target-market certification requirements.
+### Работы
+- Передать прототип ограниченной группе добровольцев.
+- Получать отчёты об ошибках с явным согласием.
+- Проверить понятность интерфейса, совместимость и поддержку.
+- Измерить частоту сбоев, успешность первого запуска, время до игры и возвраты к предыдущим решениям.
+- Не использовать закрытые игровые каталоги без разрешения.
 
-**Exit criteria:** selected configuration meets defined sustained-load targets; cost based on supplier quotes; repair and supply-chain plans exist.
+### Критерии выхода
+- Заданы и достигнуты целевые показатели стабильности и удовлетворённости.
+- Критические ошибки имеют исправление или план устранения.
+- Есть прозрачная политика приватности и поддержки.
+- Есть основания для решения о продолжении или остановке проекта.
 
-## Stage 9 — Closed beta
-- Invite a limited volunteer group.
-- Collect diagnostic reports only with consent.
-- Measure first-run success, crash rate, compatibility, usability and support burden.
-- Do not use closed game catalogues without permission.
+## Этап 6. Коммерческая подготовка
 
-**Exit criteria:** stability and satisfaction targets met; critical issues resolved or transparently blocked; privacy and support policies ready.
+- Получить необходимые лицензии и разрешения.
+- Завершить сертификацию оборудования и радиомодулей для целевых стран.
+- Подготовить дистрибуцию, гарантию, ремонт, возвраты и поддержку.
+- Подготовить договоры с поставщиками и сервисами.
+- Проверить товарный знак и название Yugatn Box.
+- Публиковать только проверенные технические и совместимые возможности.
 
-## Stage 10 — Commercial readiness
-- Secure required licences and agreements.
-- Complete hardware/radio certifications.
-- Prepare distribution, warranty, repairs, returns and support.
-- Verify trademark and product name.
-- Publish only measured compatibility and performance claims.
+## Сквозные потоки
 
-## Cross-cutting workstreams
+### A. Лицензирование и право
+Не обходить DRM и не распространять закрытые игры, прошивки или ключи. До выпуска получить консультацию юриста по выбранным странам и сервисам.
 
-### Licensing
-Do not bypass DRM or redistribute closed games, firmware or keys. Obtain jurisdiction-specific legal advice and licences as needed.
+### B. Безопасность
+Уникальные учётные данные, подписанные обновления, безопасное сопряжение, модель угроз для Remote Play, минимизация данных, обновления безопасности и процедура раскрытия уязвимостей.
 
-### Security and privacy
-Unique device credentials, signed updates, secure pairing, XR permission controls, threat model for remote play, data minimization and vulnerability disclosure.
+### C. QA
+Тестовая матрица, версии конфигураций, регрессионные тесты, сбор отчётов, известные проблемы и критерии блокировки релиза.
 
-### QA
-Versioned test matrix, regression tests, reports, known issues and release-blocking criteria.
+### D. Экономика
+Себестоимость компонентов, сборка, упаковка, логистика, гарантийный резерв, возвраты, лицензии, поддержка, инфраструктура и маржа. Не утверждать цену до получения реальных котировок.
 
-### Economics
-BOM, assembly, packaging, logistics, warranty reserve, returns, licences, support, infrastructure and margin. No final price before supplier quotes.
+## Решения, требующие участия основателя
 
-## Decisions for the project owner
+1. Стартовый рынок: одна страна или международный запуск?
+2. Целевой бюджет устройства?
+3. Приоритет: дешёвый доступ к PC-играм или максимальная производительность?
+4. Нужен ли дисковод?
+5. Какой смартфонный сценарий важнее: пульт, локальный стриминг или мобильная версия оболочки?
+6. Какая первая десятка игр должна быть поддержана?
+7. Допустим ли Linux-first MVP, если часть античит-игр не запустится?
 
-1. Target market and hardware budget.
-2. Low-cost PC-game access versus higher-end performance.
-3. Disc drive or all-digital.
-4. Phone remote, local streaming or both.
-5. First ten PC games.
-6. First two XR targets.
-7. Is virtual-screen mode the XR MVP, with native VR after it?
-8. Is wired XR acceptable for the first prototype, or is wireless a core requirement?
+## Правило управления проектом
 
-## Project governance
-
-Each major feature needs a user problem, hypothesis, alternatives, acceptance criteria, tests, limitations, risks and status. Hypotheses are not proven until measured. If demand, compatibility or cost assumptions fail, revise the plan before custom hardware investment.
+Каждая крупная функция должна иметь: описание проблемы, гипотезу, альтернативы, критерии приёмки, тесты, ограничения, риски и статус. Проектная гипотеза не считается доказанной до измерений. Если ключевая гипотеза о спросе или совместимости не подтверждается, план пересматривается до инвестиций в заказное оборудование.
 
 
-## Stage 2A — Smartphone Motion Controller
-- Build the mobile sensor UI demo with permission prompt, calibration, recenter, sensitivity, dead zone, axis inversion and touch fallback.
-- Implement authenticated local pairing with console confirmation and revocation.
-- Add a virtual-gamepad protocol with versioning, sequence numbers, bounds checks and stale-input neutralization.
-- Validate a racing tilt-steering profile first; then add flight pitch/roll, throttle, rudder and trim.
-- Test at least one iPhone/Safari and one Android/Chrome device; record median and p95 end-to-end latency, jitter, packet loss and reconnect behavior.
+## Этап XR-0 — Проверка устройств и runtime
+- Выбрать 2–3 целевых устройства: как минимум VR-гарнитуру и сценарий виртуального экрана/AR-очков, если это укладывается в бюджет.
+- Проверить видеолинию, USB, питание, требования ОС, драйверов и runtime.
+- Не считать обнаружение гарнитуры доказательством совместимости игр.
 
-**Exit criteria:** actual console-side game input is demonstrated in a test harness and one supported game; loss of phone/network/focus neutralizes controls within a measured timeout; permission denial retains touch fallback; pairing is revocable; no raw sensor data is uploaded by default. The static motion demo alone does not satisfy this stage.
+**Критерий выхода:** документированы конкретные модели, соединения, версии ПО, ограничения и путь возврата к TV/monitor.
+
+## Этап XR-1 — Виртуальный экран
+- Проверить обычные PC-игры на большом виртуальном экране в поддерживаемой гарнитуре или AR-очках.
+- Измерить стабильность, задержку, читаемость, звук и комфорт.
+- Явно отличать виртуальный экран от нативного VR.
+
+## Этап XR-2 — PC VR
+- Запустить небольшой набор легально доступных XR-приложений через совместимый runtime.
+- Измерить время кадра, пропущенные кадры, трекинг, контроллеры, звук, тепловой режим и длительную стабильность.
+- Проверить отключение гарнитуры, сбой runtime и возврат на обычный экран.
+
+## Этап XR-3 — AR/MR
+- Добавлять только функции, поддерживаемые конкретным устройством и SDK: пространственные панели, passthrough, трекинг рук и другие возможности.
+- Проверить разрешения и приватность камер, микрофона, трекинга взгляда и карты помещения.
+
+## Этап MC-0 — Смартфон как геймпад
+- Сделать мобильную страницу с разрешением датчиков по явному действию, отображением осей, калибровкой, центрированием, чувствительностью, мёртвой зоной, инверсией и сенсорным запасным управлением.
+- Реализовать сопряжение по одноразовому коду с подтверждением на консоли и возможностью отзыва.
+- Определить версионированный протокол виртуального геймпада с проверкой диапазонов, последовательности сообщений и тайм-аутом нейтрализации.
+- Сначала испытать наклонное руление в гоночном профиле, затем тангаж/крен/руль направления/триммер в авиасимуляторе.
+- Проверить минимум один iPhone/Safari и один Android/Chrome; измерить медианную и 95-процентильную задержку, джиттер, потери и восстановление.
+
+**Критерий выхода:** ввод реально работает в тестовом стенде и одной поддерживаемой игре; потеря телефона, сети или фокуса приводит к нейтрали в измеренное время; отказ в разрешении не блокирует сенсорные кнопки; сопряжение можно отозвать. Один статический макет не считается завершением этапа.
