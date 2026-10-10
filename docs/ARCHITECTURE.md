@@ -252,3 +252,8 @@ Game Compatibility Hub — единая оболочка для разных с�
 Контракт каталога находится в `schemas/game-catalog.schema.json`, пример — в `data/game-catalog.example.json`. `scripts/validate-game-catalog.mjs` проверяет базовые инварианты без внешних npm-зависимостей; тесты — в `tests/validate-game-catalog.test.mjs`; CI — `.github/workflows/catalog-validation.yml`. Неизвестный статус остаётся NOT_TESTED. Валидность JSON и прохождение тестов не означают, что игра запускается. Перед production статус PLAYABLE должен требовать воспроизводимый отчёт о runtime, ОС, аппаратной конфигурации и игровом процессе.
 
 Подробности: [COMPATIBILITY_DATA_MODEL.md](COMPATIBILITY_DATA_MODEL.md).
+
+
+## 22. Product strategy and scope boundary
+
+The product direction is documented in [PRODUCT_STRATEGY_PLAYER_SOVEREIGNTY.md](PRODUCT_STRATEGY_PLAYER_SOVEREIGNTY.md). The first deliverable is a Linux-first controller shell, a validated library and a mockable LaunchProvider contract; a benign local application must launch and recover before a commercial game integration is considered. Library import must be explicit and safe. Local execution, official remote play, cloud streaming and external capture are separate routes; never silently fall back between them. Player sovereignty means exportable metadata, privacy-respecting defaults, signed updates and reviewable evidence—not a claim that open source alone proves security.
