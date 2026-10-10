@@ -154,3 +154,21 @@ MVP-функции:
 8. Набор обязательных тестовых игр.
 
 Эти решения должны приниматься после прототипирования и измерений, а не на основе маркетинговых обещаний.
+
+## MVP boundary: evidence before compatibility claims
+
+The first implementation is a static controller-first UI concept and a machine-readable compatibility catalog. It is not yet a game launcher, OS image, store integration, streaming client or mobile companion.
+
+The compatibility record and test report are separate artifacts. Wishlist entries must remain `Not tested` until a repeatable test run exists. A schema-valid record is not proof that a game runs. `Native`, `Verified` or `Playable` requires a dated report and a declared reference profile.
+
+Local execution, compatibility layers, emulation, official remote play, cloud streaming and external capture are distinct routes. Never silently replace a failed local launch with a streaming route. The user must see prerequisites and consent to accounts/network/data transfer.
+
+The MVP and its differentiation are defined in [MVP_SCOPE.md](MVP_SCOPE.md); the public data contract is in [COMPATIBILITY_INDEX.md](COMPATIBILITY_INDEX.md).
+
+## Validation and input boundary
+
+Compatibility data is validated with Ajv against the catalog, game-entry and test-report schemas. Negative fixtures guard against status inflation and malformed reports. CI is evidence about data integrity only, not evidence that a game launches or that the UI works at runtime.
+
+The browser shell uses the Gamepad API for navigation and activation. It does not launch arbitrary local binaries: a browser page cannot safely or portably execute host programs. The future launch provider must be a separately installed, explicitly permissioned local service or native application with a narrow command allowlist, explicit user action, process isolation, exit-code capture and recovery to the shell. Never accept arbitrary commands from catalog metadata.
+
+Hardware and OS remain unselected. Follow [REFERENCE_PROFILE.md](REFERENCE_PROFILE.md) before generating verified compatibility claims.

@@ -1,0 +1,31 @@
+name: Compatibility data validation
+on:
+  push:
+    paths:
+      - "compatibility/**"
+      - "shell/**"
+      - "scripts/**"
+      - "package.json"
+      - ".github/workflows/compatibility-validation.yml"
+  pull_request:
+    paths:
+      - "compatibility/**"
+      - "shell/**"
+      - "scripts/**"
+      - "package.json"
+      - ".github/workflows/compatibility-validation.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install pinned validation dependencies
+        run: npm install --no-save --package-lock=false ajv@8.17.1 ajv-formats@3.0.1
+      - name: Validate catalog, schemas, reports, and negative fixtures
+        run: npm run validate:compatibility
+      - name: Check shell files exist
+        run: test -s shell/index.html && test -s shell/app.js && test -s shell/style.css

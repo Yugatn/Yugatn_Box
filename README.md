@@ -60,3 +60,24 @@ Yugatn Box — проект универсальной игровой систе
 ## Принцип разработки
 
 Сначала доказать работоспособность программного прототипа и измерить пользовательскую ценность. Затем выбирать оборудование. Не путать проектную гипотезу, успешно пройденный тест, официальную совместимость и лицензионное разрешение.
+
+## MVP: доказательная оболочка для PC-библиотеки
+
+**Позиционирование:** консольная оболочка для вашей PC-библиотеки у телевизора, с публичной матрицей совместимости и локальным стримингом на телефон — без обещаний запускать закрытые каталоги PlayStation, Xbox или Nintendo.
+
+В ветке `feature/mvp-prototype` появился первый статический UI-прототип (Continue / Library / Settings), машиночитаемый каталог, схемы записей и отчётов, а также workflow первичной проверки данных. Это демонстрационный интерфейс: он пока не запускает игры, не подключается к магазинам и не стримит видео.
+
+- [MVP shell prototype](../tree/feature/mvp-prototype/shell)
+- [Compatibility catalog](../blob/feature/mvp-prototype/compatibility/catalog.json)
+- [Game schema](../blob/feature/mvp-prototype/compatibility/game.schema.json)
+- [Test report schema](../blob/feature/mvp-prototype/compatibility/report.schema.json)
+- [MVP scope and market positioning](docs/MVP_SCOPE.md)
+- [Compatibility Index specification](docs/COMPATIBILITY_INDEX.md)
+
+Все десять записей каталога — примеры списка желаемых игр со статусом **Not tested**. Они не являются результатами тестирования или заявлением о совместимости.
+
+## Validation and next gate
+
+The current branch adds Ajv-based JSON Schema validation for the catalog, game entries and report files, plus negative checks for a false `Verified` claim, duplicate game IDs and a malformed report. CI still validates data and artifact presence only; it does not run the UI or test a physical controller.
+
+Browser Gamepad API navigation is implemented in the prototype for D-pad/analog navigation, accept/back and shoulder-button tab switching. Physical controller behavior remains **NOT TESTED**. See [Reference Profile Decision](docs/REFERENCE_PROFILE.md): hardware and Linux image remain `NOT_SELECTED`, with a seven-day decision window ending 2026-10-17.

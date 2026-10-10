@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yugatn.github.io/Yugatn_Box/compatibility/catalog.schema.json",
+  "title": "Yugatn Box Compatibility Catalog",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "reference_profile",
+    "entries"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "reference_profile": {
+      "type": "object",
+      "required": [
+        "name",
+        "status",
+        "os",
+        "cpu",
+        "gpu",
+        "driver"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "NOT_SELECTED",
+            "SELECTED",
+            "RETIRED"
+          ]
+        },
+        "os": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cpu": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "gpu": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "driver": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "game.schema.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Yugatn Box Compatibility Test Report",
+  "type": "object",
+  "required": [
+    "report_id",
+    "game_id",
+    "result",
+    "profile_id",
+    "test_date",
+    "steps",
+    "issues",
+    "review_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "report_id": {
+      "type": "string",
+      "pattern": "^YB-TEST-[0-9]{4,}$"
+    },
+    "game_id": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "PARTIAL",
+        "FAIL",
+        "NOT_RUN"
+      ]
+    },
+    "profile_id": {
+      "type": "string"
+    },
+    "os_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "cpu": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "gpu": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "driver": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "resolution": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "test_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "fps_avg": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "fps_p1_low": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "input_status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "PARTIAL",
+        "FAIL",
+        "NOT_RUN"
+      ]
+    },
+    "audio_status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "PARTIAL",
+        "FAIL",
+        "NOT_RUN"
+      ]
+    },
+    "resume_status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "PARTIAL",
+        "FAIL",
+        "NOT_RUN"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "result"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "result": {
+            "enum": [
+              "PASS",
+              "PARTIAL",
+              "FAIL",
+              "NOT_RUN"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_urls": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "SELF_REVIEWED",
+        "INDEPENDENTLY_REVIEWED"
+      ]
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

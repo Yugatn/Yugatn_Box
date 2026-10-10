@@ -1,0 +1,9 @@
+{
+  "name": "yugatn-box-validation",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Validation tooling for Yugatn Box compatibility data",
+  "scripts": {
+    "validate:compatibility": "node scripts/validate-compatibility.mjs"
+  }
+}

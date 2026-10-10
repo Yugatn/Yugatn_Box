@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yugatn.github.io/Yugatn_Box/compatibility/game.schema.json",
+  "title": "Yugatn Box Compatibility Entry",
+  "type": "object",
+  "required": [
+    "game_id",
+    "title",
+    "store",
+    "status",
+    "route",
+    "tested"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "game_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{1,79}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "store": {
+      "type": "string",
+      "enum": [
+        "Steam",
+        "GOG",
+        "Epic Games Store",
+        "Other",
+        "Unknown"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Native",
+        "Verified",
+        "Playable",
+        "Streaming-only",
+        "Unsupported",
+        "Not tested"
+      ]
+    },
+    "route": {
+      "type": "string",
+      "enum": [
+        "native-linux",
+        "proton",
+        "wine",
+        "remote-play",
+        "cloud-streaming",
+        "external-client",
+        "none"
+      ]
+    },
+    "os": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "cpu": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "gpu": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "driver": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fps_avg": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "resolution": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "test_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "report_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
+    },
+    "tested": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "tested": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "Not tested"
+          },
+          "test_date": {
+            "type": "null"
+          },
+          "fps_avg": {
+            "type": "null"
+          },
+          "report_url": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "Native",
+              "Verified",
+              "Playable"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "tested": {
+            "const": true
+          },
+          "test_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    }
+  ]
+}

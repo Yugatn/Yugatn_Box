@@ -1,0 +1,43 @@
+{
+  "report_id": "YB-TEST-0001",
+  "game_id": "hades",
+  "result": "NOT_RUN",
+  "profile_id": "reference-profile-not-selected",
+  "os_version": null,
+  "cpu": null,
+  "gpu": null,
+  "driver": null,
+  "resolution": null,
+  "test_date": null,
+  "fps_avg": null,
+  "fps_p1_low": null,
+  "input_status": "NOT_RUN",
+  "audio_status": "NOT_RUN",
+  "resume_status": "NOT_RUN",
+  "steps": [
+    {
+      "name": "Install and first launch",
+      "result": "NOT_RUN",
+      "notes": "Awaiting selected reference hardware and a real test."
+    },
+    {
+      "name": "Controller input",
+      "result": "NOT_RUN",
+      "notes": ""
+    },
+    {
+      "name": "Audio",
+      "result": "NOT_RUN",
+      "notes": ""
+    },
+    {
+      "name": "Suspend/resume and exit recovery",
+      "result": "NOT_RUN",
+      "notes": ""
+    }
+  ],
+  "issues": [],
+  "evidence_urls": [],
+  "review_status": "DRAFT",
+  "notes": "Template only. This is not evidence that the game was tested."
+}
