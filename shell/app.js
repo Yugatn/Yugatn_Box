@@ -64,10 +64,10 @@ function gamepadLoop(){
  const pad=pads[0];
  if(pad){
   const current={
-   up:pressed(pad,12)||pad.axes.some((v,i)=>i%2===1&&v<-.65),
-   down:pressed(pad,13)||pad.axes.some((v,i)=>i%2===1&&v>.65),
-   left:pressed(pad,14)||pad.axes.some((v,i)=>i%2===0&&v<-.65),
-   right:pressed(pad,15)||pad.axes.some((v,i)=>i%2===0&&v>.65),
+   up:pressed(pad,12)||(pad.axes[1]??0)<-.65,
+   down:pressed(pad,13)||(pad.axes[1]??0)>.65,
+   left:pressed(pad,14)||(pad.axes[0]??0)<-.65,
+   right:pressed(pad,15)||(pad.axes[0]??0)>.65,
    accept:pressed(pad,0),back:pressed(pad,1),prevTab:pressed(pad,4),nextTab:pressed(pad,5)
   };
   for(const key of ["up","left","down","right","accept","back","prevTab","nextTab"]){
