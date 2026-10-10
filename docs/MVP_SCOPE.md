@@ -78,3 +78,9 @@ Proceed to a closed beta only after:
 - update and data export/recovery behavior is documented;
 - the compatibility catalog is publicly accessible and clearly distinguishes tested from untested;
 - interview feedback confirms the evidence + companion workflow solves a problem not already solved adequately by the user's current setup.
+
+## Current implementation boundary (2026-10-10)
+
+The branch now includes Ajv validation of catalog/game/report schemas, negative checks, and browser Gamepad API navigation. These are source-level and CI artifacts; no physical controller or game has been tested. The reference profile remains `NOT_SELECTED`.
+
+The seven-day reference-profile decision gate is documented in [REFERENCE_PROFILE.md](REFERENCE_PROFILE.md). Arbitrary local process launch is deliberately not implemented in the browser: a future native/permissioned launch provider must enforce an allowlist and never execute catalog-supplied commands.
