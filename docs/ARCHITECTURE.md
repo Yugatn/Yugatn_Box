@@ -232,3 +232,16 @@ Audio Router должен выбирать между HDMI/TV, USB Audio, Blueto
 Профили глобальные, игровые и жанровые; импортированный JSON проверяется по версии и схеме и не исполняется как код. Haptics, gyro, touchpad, адаптивные триггеры, аудио и батарея показываются только при обнаруженной и протестированной поддержке. Драйверы и виртуальный контроллер реализуются отдельным платформенным backend и не заменяются HTML-демо.
 
 Подробная спецификация: [UNIVERSAL_CONTROLLER_SUPPORT.md](UNIVERSAL_CONTROLLER_SUPPORT.md).
+
+
+## 20. Game Compatibility Hub — Xbox / PlayStation / PC
+
+Game Compatibility Hub — единая оболочка для разных способов запуска, а не универсальный эмулятор консольных игр. Основные компоненты: Library Catalog, Launch Provider Interface, Runtime Registry, Compatibility Database, Save and State Manager, Controller Translation, Overlay and Capture.
+
+Каждый provider явно объявляет платформы, поколения, требования и ограничения. Начальные маршруты: Native PC, Local Emulator, Official Remote Play, Cloud Streaming, External Capture и Unavailable. Система не должна молча переключать локальный запуск на потоковый.
+
+Для каждой игры/версии/runtime сохраняются проверяемые данные: ОС, CPU/GPU, драйвер, версия runtime, конфигурация, результат загрузки/входа в gameplay, известные дефекты, состояние ввода/аудио/сохранений и дата теста. Статусы NOT_TESTED, BOOTED, IN_GAME, PLAYABLE, ISSUES, BROKEN и CONFLICTED различаются; успешная загрузка не равна доказанной играбельности.
+
+Первый интеграционный путь — внешний runtime, установленный пользователем из проверенного источника, с явным путём к исполняемому файлу. Не включать copyrighted firmware, ключи, коммерческие образы игр или сторонние бинарники без разрешения. Не обходить DRM, учётные записи, античит или аутентификацию платформ. Для современных консолей сначала исследовать официальные Remote Play/streaming-приложения и native PC editions.
+
+Подробная спецификация и этапы: [GAME_COMPATIBILITY_HUB.md](GAME_COMPATIBILITY_HUB.md).
