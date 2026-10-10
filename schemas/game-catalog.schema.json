@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yugatn.github.io/Yugatn_Box/schemas/game-catalog.schema.json",
+  "title": "Yugatn Box Game Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "games"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "games": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/game" }
+    }
+  },
+  "$defs": {
+    "platform": {
+      "type": "string",
+      "enum": ["pc", "xbox-original", "xbox-360", "xbox-one", "xbox-series", "ps1", "ps2", "ps3", "ps4", "ps5", "other"]
+    },
+    "routeType": {
+      "type": "string",
+      "enum": ["native-pc", "local-emulator", "official-remote-play", "cloud-streaming", "external-capture", "unavailable"]
+    },
+    "compatibilityStatus": {
+      "type": "string",
+      "enum": ["NOT_TESTED", "BOOTED", "IN_GAME", "PLAYABLE", "ISSUES", "BROKEN", "CONFLICTED"]
+    },
+    "game": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "platform", "compatibility", "routes"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,79}$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "platform": { "$ref": "#/$defs/platform" },
+        "region": { "type": "string", "maxLength": 40 },
+        "gameVersion": { "type": "string", "maxLength": 80 },
+        "source": { "type": "string", "enum": ["user-entry", "official-store", "user-provided-media", "homebrew", "unknown"] },
+        "compatibility": { "$ref": "#/$defs/compatibility" },
+        "routes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/route" }
+        },
+        "controllerProfileId": { "type": "string", "maxLength": 120 },
+        "savePolicy": { "type": "string", "enum": ["separate-per-runtime", "native-managed", "remote-managed", "unknown"] }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "lastTested"],
+      "properties": {
+        "status": { "$ref": "#/$defs/compatibilityStatus" },
+        "lastTested": { "type": ["string", "null"], "format": "date-time" },
+        "runtimeId": { "type": ["string", "null"], "maxLength": 120 },
+        "runtimeVersion": { "type": ["string", "null"], "maxLength": 80 },
+        "hostOS": { "type": ["string", "null"], "enum": ["windows", "linux", "macos", "other", null] },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "evidenceUrl": { "type": ["string", "null"], "format": "uri" }
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "label", "availability", "prerequisites"],
+      "properties": {
+        "type": { "$ref": "#/$defs/routeType" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "availability": { "type": "string", "enum": ["candidate", "available", "unavailable", "needs-user-setup"] },
+        "providerId": { "type": ["string", "null"], "maxLength": 120 },
+        "prerequisites": { "type": "array", "items": { "type": "string", "maxLength": 240 }, "maxItems": 30 },
+        "limitations": { "type": "array", "items": { "type": "string", "maxLength": 240 }, "maxItems": 30 }
+      }
+    }
+  }
+}
